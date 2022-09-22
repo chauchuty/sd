@@ -1,9 +1,9 @@
-import ContentComponent from "./content/content.component"
-import FooterComponent from "./footer/footer.component"
-import NavBarComponent from "./navbar/navbar.component"
-import SideBarComponent from "./sidebar/sidebar.component"
+import ContentComponent from "../components/layout/content/content.component"
+import FooterComponent from "../components/layout/footer/footer.component"
+import NavBarComponent from "../components/layout/navbar/navbar.component"
+import SideBarComponent from "../components/layout/sidebar/sidebar.component"
 
-function LayoutComponent(props: any) {
+function HomePage(props: any) {
     return (
         <div id="wrapper">
             <SideBarComponent />
@@ -18,4 +18,4 @@ function LayoutComponent(props: any) {
     )
 }
 
-export default LayoutComponent
+export default HomePage
