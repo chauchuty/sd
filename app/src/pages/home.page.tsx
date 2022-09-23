@@ -7,10 +7,13 @@ function HomePage(props: any) {
     return (
         <div id="wrapper">
             <SideBarComponent />
-            <div id="content-wrapper" className="d-flex flex-column">
+            <div id="content-wrapper" className="d-flex flex-column" style={{ height: "100vh"}}>
                 <div id="content">
                     <NavBarComponent />
-                    <ContentComponent />
+                    <ContentComponent>
+                        {/* Implementar Lógica Lista de usuários / Chat */}
+                        <h3>Conteúdo!</h3>
+                    </ContentComponent>
                 </div>
                 <FooterComponent />
             </div>

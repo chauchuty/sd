@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 
@@ -35,7 +34,7 @@ function LoginPage() {
                                         <form onSubmit={handleSubmit(onSubmit)}>
                                             <div className="mb-3">
                                                 <label htmlFor="ra" className="form-label">RA (Registro Acadêmico)</label>
-                                                <input {...register("ra", { required: true })} type="text" className="form-control" id="ra" />
+                                                <input {...register("ra", { required: true })} type="text" className="form-control" id="ra" autoComplete="off"/>
                                                 {
                                                     errors.ra && <span className="form-text text-danger">Registro Acadêmico é obrigatório</span>
                                                 }
@@ -43,7 +42,7 @@ function LoginPage() {
                                             </div>
                                             <div className="mb-3">
                                                 <label htmlFor="senha" className="form-label">Senha</label>
-                                                <input {...register("senha", { required: true })} type="password" className="form-control" id="senha" />
+                                                <input {...register("senha", { required: true })} type="password" className="form-control" id="senha" autoComplete="off" />
                                                 {
                                                     errors.ra && <span className="form-text text-danger">Senha é obrigatório</span>
                                                 }
