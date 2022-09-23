@@ -1,11 +1,10 @@
-import LayoutComponent from "./components/layout/layout.component"
+import { RouterProvider } from "react-router-dom"
+import { router } from "./routes/router"
+
 
 function App() {
-
   return (
-    <>
-      <LayoutComponent />
-    </>
+      <RouterProvider router={router}/>
   )
 }
 
