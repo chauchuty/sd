@@ -37,13 +37,16 @@ function LoginPage() {
                                                 <label htmlFor="ra" className="form-label">RA (Registro Acadêmico)</label>
                                                 <input {...register("ra", { required: true })} type="text" className="form-control" id="ra" />
                                                 {
-                                                    errors.ra && <span className="form-text text-danger">Este campo é obrigatório</span>
+                                                    errors.ra && <span className="form-text text-danger">Registro Acadêmico é obrigatório</span>
                                                 }
 
                                             </div>
                                             <div className="mb-3">
                                                 <label htmlFor="senha" className="form-label">Senha</label>
                                                 <input {...register("senha", { required: true })} type="password" className="form-control" id="senha" />
+                                                {
+                                                    errors.ra && <span className="form-text text-danger">Senha é obrigatório</span>
+                                                }
                                             </div>
 
                                             <button type="submit" className="btn btn-block btn-dark">Acessar</button>
