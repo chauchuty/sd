@@ -35,7 +35,7 @@ function LoginPage() {
                                         <form onSubmit={handleSubmit(onSubmit)}>
                                             <div className="mb-3">
                                                 <label htmlFor="ra" className="form-label">RA (Registro Acadêmico)</label>
-                                                <input {...register("ra")} type="text" className="form-control" id="ra" />
+                                                <input {...register("ra", { required: true })} type="text" className="form-control" id="ra" />
                                                 {
                                                     errors.ra && <span className="form-text text-danger">Este campo é obrigatório</span>
                                                 }
@@ -43,7 +43,7 @@ function LoginPage() {
                                             </div>
                                             <div className="mb-3">
                                                 <label htmlFor="senha" className="form-label">Senha</label>
-                                                <input {...register("senha")} type="password" className="form-control" id="senha" />
+                                                <input {...register("senha", { required: true })} type="password" className="form-control" id="senha" />
                                             </div>
 
                                             <button type="submit" className="btn btn-block btn-dark">Acessar</button>
