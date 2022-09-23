@@ -4,7 +4,7 @@ import { render } from "react-dom";
 function NavBarComponent(props: any) {
 	const [userName, setUserName] = React.useState("Test User");
 
-	const handeclick = () => {
+	const handleLogout = () => {
 		console.log("clicked");
 	};
 
@@ -39,7 +39,7 @@ function NavBarComponent(props: any) {
 							href="#"
 							data-toggle="modal"
 							data-target="#logoutModal"
-							onClick={handeclick}
+							onClick={handleLogout}
 						>
 							<i className="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
 							Logout
