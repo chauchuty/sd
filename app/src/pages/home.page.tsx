@@ -1,7 +1,7 @@
-import ContentComponent from "../components/layout/content/content.component"
-import FooterComponent from "../components/layout/footer/footer.component"
-import NavBarComponent from "../components/layout/navbar/navbar.component"
-import SideBarComponent from "../components/layout/sidebar/sidebar.component"
+import ContentComponent from "../components/content/content.component"
+import FooterComponent from "../components/footer/footer.component"
+import NavBarComponent from "../components/navbar/navbar.component"
+import SideBarComponent from "../components/sidebar/sidebar.component"
 
 function HomePage(props: any) {
     return (
