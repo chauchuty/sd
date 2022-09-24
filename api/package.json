@@ -2,11 +2,11 @@
   "name": "api_sistemas_distribuidos",
   "version": "1.0.0",
   "description": "",
-  "main": "./src/server.ts",
+  "main": "./src/application.ts",
   "scripts": {
-    "start": "node ./build/server.js",
+    "start": "node ./build/application.js",
     "build": "tsc",
-    "dev": "ts-node-dev --respawn --ignore-watch node_modules src/server.ts"
+    "dev": "ts-node-dev --respawn ./src/application.ts"
   },
   "keywords": [],
   "author": "",
