@@ -1,5 +1,7 @@
+import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
+import SocketClient from "../service/socket.client";
 
 type Form = {
     ra: string
@@ -7,16 +9,19 @@ type Form = {
 }
 
 function LoginPage() {
+    const [socket, setSocket] = useState<SocketClient>();
+    
     const { register, handleSubmit, watch, formState: { errors } } = useForm<Form>();
 
-    const onSubmit: SubmitHandler<Form> = data => {
-        console.log(data); // Implementar Login
+    useEffect(() => {
+        setSocket(new SocketClient());
+        
+    }, [])
+
+    const onSubmit: SubmitHandler<Form> = (data) => {
+        socket?.emit(JSON.stringify(data))
     };
 
-    // useEffect(() => {
-    //     console.log(watch("ra"));
-    //     console.log(watch("senha"));
-    // }, [watch("ra"), watch("senha")]);
 
     return (
         <div className="container">
@@ -34,7 +39,7 @@ function LoginPage() {
                                         <form onSubmit={handleSubmit(onSubmit)}>
                                             <div className="mb-3">
                                                 <label htmlFor="ra" className="form-label">RA (Registro Acadêmico)</label>
-                                                <input {...register("ra", { required: true })} type="text" className="form-control" id="ra" autoComplete="off"/>
+                                                <input {...register("ra", { required: true })} type="text" className="form-control" id="ra" autoComplete="off" />
                                                 {
                                                     errors.ra && <span className="form-text text-danger">Registro Acadêmico é obrigatório</span>
                                                 }

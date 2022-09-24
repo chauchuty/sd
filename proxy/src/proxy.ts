@@ -34,9 +34,7 @@ class Proxy {
         this.server.on('connection', (socket) => {
             console.log('Cliente Conectado!')
             socket.on('message', (message) => {
-                console.log(JSON.parse(message.toString()))
                 socket.send(message.toString())
-                socket.emit(message.toString())
             })
         })
     }
