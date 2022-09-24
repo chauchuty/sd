@@ -2,9 +2,9 @@
   "name": "proxy",
   "version": "1.0.0",
   "description": "",
-  "main": "./src/proxy.ts",
+  "main": "./src/socket.client.ts",
   "scripts": {
-    "start": "node ./dist/proxy.js",
+    "start": "node ./dist/socket.client.js",
     "build": "tsc",
     "dev": "ts-node-dev --respawn ."
   },
