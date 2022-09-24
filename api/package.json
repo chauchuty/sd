@@ -1,0 +1,14 @@
+{
+  "name": "api_sistemas_distribuidos",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./src/server.ts",
+  "scripts": {
+    "start": "node ./build/server.js",
+    "build": "tsc",
+    "dev": "ts-node-dev --respawn --ignore-watch node_modules src/server.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
