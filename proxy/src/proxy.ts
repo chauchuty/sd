@@ -1,19 +1,24 @@
-import { Server } from 'ws'
+import WebSocketServer from "./websocket.client"
+import SocketClient from "./socket.client"
+import GeneralPreferences from "./general.preferences"
 
-class Proxy {
-    private server: Server
+class Proxy extends GeneralPreferences {
+    private webSocketServer!: WebSocketServer
+    private socketClient: SocketClient
 
-    constructor() {
-        this.server = new Server({ port: 8081 })
+    constructor(){
+        super()
+        this.webSocketServer = new WebSocketServer()
+        this.socketClient = new SocketClient()
+    }
 
-        this.server.on('connection', (socket) => {
-            console.log('Cliente Conectado!')
-            socket.on('message', (message) => {
-                socket.send(message.toString())
-            })
-        })
+    start(){
+        this.logger('Proxy Inicializado')
+        // this.webSocketServer.start()
+        this.socketClient.start()
     }
 }
 
 // Application
 const proxy = new Proxy()
+proxy.start()

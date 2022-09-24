@@ -1,17 +1,19 @@
 import net from 'net'
 import env from './config/environments'
+import GeneralPreferences from './general.preferences'
 
-class SocketClient {
+class SocketClient extends GeneralPreferences {
     private client: net.Socket
 
     constructor() {
+        super()
         this.client = new net.Socket()
-        
     }
 
     start(){
-        this.client.connect(env.api.port, env.api.host, () => {
-            console.log('Conectado ao servidor!')
+        this.logger('Inicializando SocketClient')
+        this.client.connect(env.api.socketclient.port, env.api.socketclient.host, () => {
+            this.logger('Conectado ao servidor')
             this.emit("Brasil")
         })
     }
@@ -21,6 +23,4 @@ class SocketClient {
     }
 }
 
-// Application
-const socketClient = new SocketClient()
-socketClient.start()
+export default SocketClient
