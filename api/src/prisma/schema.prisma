@@ -1,0 +1,26 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model categoria {
+  id      Int       @id @default(autoincrement())
+  nome    String    @db.VarChar(50)
+  usuario usuario[]
+}
+
+model usuario {
+  id              Int       @id @default(autoincrement())
+  nome            String    @db.VarChar(255)
+  ra              String    @db.VarChar(32)
+  senha           String    @db.VarChar(32)
+  fk_categoria_id Int
+  descricao       String    @db.Text
+  categoria       categoria @relation(fields: [fk_categoria_id], references: [id], onUpdate: Restrict, map: "usuario_ibfk_1")
+
+  @@index([fk_categoria_id], map: "fk_categoria_id")
+}
