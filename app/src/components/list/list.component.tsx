@@ -1,4 +1,9 @@
-function ListComponent(props: any) {
+type Categoria = {
+	categoria: string;
+	status: string;
+};
+
+function ListComponent(props: Categoria) {
 	return (
 		<table>
 			<tbody>
