@@ -8,10 +8,10 @@ const environments = {
 
     production: {
         api: {
-            host: '',
-            port: 0
+            host: '51.81.87.67',
+            port: 8082
         }
     }
 }
 
-export default environments.development // Development or Production
+export default environments.production // Development or Production
