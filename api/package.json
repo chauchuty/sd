@@ -13,7 +13,8 @@
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^4.2.1",
-    "@types/node": "^18.7.20"
+    "@types/node": "^18.7.20",
+    "ts-node-dev": "^2.0.0"
   },
   "devDependencies": {
     "prisma": "^4.3.1"

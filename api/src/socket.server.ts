@@ -30,7 +30,7 @@ class SocketServer extends GeneralPreferences{
             this.logger('Cliente Conectado!')
 
             this.onMessage(socket)
-            this.onClose(socket)
+            // this.onClose(socket)
         })
     }
 
@@ -43,10 +43,10 @@ class SocketServer extends GeneralPreferences{
                 this.logger('Tratando dados recebidos...')
                 this.handleMessage.handleProtocolRequest(data)
                     .then((response) => {
-                        socket.emit('data', response)
+                        socket.write(response)
                     })
                     .catch((error) => {
-                        socket.emit('data', new ProtocolResponse(500, error, {}).toJson())
+                        socket.write(error);
                     })
             } catch (error) {
                 this.logger('Erro ao processar a mensagem recebida!')
