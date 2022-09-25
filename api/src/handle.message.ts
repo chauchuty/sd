@@ -20,7 +20,7 @@ class HandleMessage extends GeneralPreferences {
             // this.response = await this.handleRegister(protocolRequest.params)
             break;
           case "logout":
-            // this.response = await this.handleLogout(protocolRequest.params)
+            this.response = await this.handleLogout(this.request.params)
             break;
           default:
             this.logger("Operação invalida!");
@@ -91,11 +91,12 @@ class HandleMessage extends GeneralPreferences {
 
   async handleLogout(params: any) {
     this.logger(`[handleLogout] - ${JSON.stringify(params)}`);
-    const { ra } = params;
+    const { ra, senha } = params;
 
     let usuario = await prisma.usuario.findFirst({
       where: {
         ra: ra,
+        senha: senha
       },
     });
 
