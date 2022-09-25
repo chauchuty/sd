@@ -16,11 +16,11 @@ class HandleMessage extends GeneralPreferences {
           case "login":
             this.response = await this.handleLogin(this.request.params);
             break;
-          case "register":
-            // this.response = await this.handleRegister(protocolRequest.params)
+          case "cadastrar":
+            this.response = await this.handleRegister(this.request.params)
             break;
           case "logout":
-            this.response = await this.handleLogout(this.request.params)
+            this.response = await this.handleLogout(this.request.params);
             break;
           default:
             this.logger("Operação invalida!");
@@ -87,7 +87,37 @@ class HandleMessage extends GeneralPreferences {
     }
   }
 
-  async handleRegister(params: any) {}
+  async handleRegister(params: any) {
+    this.logger(`[handleRegister] - ${JSON.stringify(params)}`);
+    const { ra } = params;
+
+    let usuario = await prisma.usuario.findFirst({
+      where: {
+        ra: ra,
+      },
+    });
+
+    if (usuario) {
+      this.logger(`Usuário já cadastrado! ${usuario.ra}`);
+      return new ProtocolResponse(401, "Usuário já cadastrado!", {ra: usuario.ra});
+    }
+
+    usuario = await prisma.usuario.create({
+      data: params,
+    });
+
+    this.logger(`[DB] - ${usuario}`);
+
+    if (usuario) {
+      this.logger(`Usuário cadastrado com sucesso!`);
+      return new ProtocolResponse(200, "Usuário cadastrado com sucesso!", {
+        usuario,
+      });
+    } else {
+      this.logger(`Não foi possível cadastrar usuário!`);
+      return new ProtocolResponse(500, "Internal Server Error!", {});
+    }
+  }
 
   async handleLogout(params: any) {
     this.logger(`[handleLogout] - ${JSON.stringify(params)}`);
@@ -96,7 +126,7 @@ class HandleMessage extends GeneralPreferences {
     let usuario = await prisma.usuario.findFirst({
       where: {
         ra: ra,
-        senha: senha
+        senha: senha,
       },
     });
 
