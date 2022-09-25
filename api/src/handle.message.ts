@@ -23,13 +23,13 @@ class HandleMessage extends GeneralPreferences {
             // this.response = await this.handleLogout(protocolRequest.params)
             break;
           default:
-            this.logger('Operação invalida!')
+            this.logger("Operação invalida!");
             this.response = new ProtocolResponse(400, "Operação invalida!", {});
             break;
         }
         resolve(this.response.toJson());
       } catch (error) {
-        this.logger('Internal Server Error')
+        this.logger("Internal Server Error");
         reject(
           new ProtocolResponse(500, "Internal Server Error", {
             error: error,
@@ -43,25 +43,82 @@ class HandleMessage extends GeneralPreferences {
     this.logger(`[handleLogin] - ${JSON.stringify(params)}`);
     const { ra, senha } = params;
 
-    const usuario = await prisma.usuario.findFirst({
+    let usuario = await prisma.usuario.findFirst({
       where: {
         ra: ra,
         senha: senha,
       },
     });
 
+    if (!usuario) {
+      this.logger(`Usuário não encontrado!`);
+      return new ProtocolResponse(401, "Usuário não encontrado!", {});
+    }
+
+    if (usuario.status !== 0) {
+      this.logger(`Usuário já conectado!`);
+      return new ProtocolResponse(401, "Usuário já conectado!", {
+        nome: usuario.nome,
+        status: usuario.status,
+      });
+    }
+
     if (usuario) {
-      usuario.status = 1;
-      return new ProtocolResponse(200, "Usuário logado com sucesso!", usuario);
-    } else {
-      return new ProtocolResponse(404, "Usuário ou senha inválido!", {});
+      usuario = await prisma.usuario.update({
+        where: {
+          id: usuario.id,
+        },
+        data: {
+          status: 1,
+        },
+      });
+
+      if (usuario.status === 1) {
+        return new ProtocolResponse(
+          200,
+          "Usuário logado com sucesso!",
+          usuario
+        );
+      } else {
+        return new ProtocolResponse(500, "Internal Server Error", {
+          usuario,
+        });
+      }
     }
   }
 
   async handleRegister(params: any) {}
 
   async handleLogout(params: any) {
-    // ...
+    this.logger(`[handleLogout] - ${JSON.stringify(params)}`);
+    const { ra } = params;
+
+    let usuario = await prisma.usuario.findFirst({
+      where: {
+        ra: ra,
+      },
+    });
+
+    if (!usuario) {
+      this.logger(`Usuário não encontrado!`);
+      return new ProtocolResponse(401, "Usuário não encontrado!", {});
+    }
+
+    if (usuario.status !== 0) {
+      this.logger(`Usuário desconectado!`);
+      usuario = await prisma.usuario.update({
+        where: {
+          id: usuario.id,
+        },
+        data: {
+          status: 0,
+        },
+      });
+      return new ProtocolResponse(200, "Usuário desconectado com sucesso!", {});
+    } else {
+      this.logger(`Usuário já desconectado!`);
+      return new ProtocolResponse(401, "Usuário já está desconectado!", {});
+    }
   }
 }
 

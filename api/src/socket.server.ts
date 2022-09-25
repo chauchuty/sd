@@ -30,7 +30,7 @@ class SocketServer extends GeneralPreferences{
             this.logger('Cliente Conectado!')
 
             this.onMessage(socket)
-            // this.onClose(socket)
+            this.onClose(socket)
         })
     }
 
