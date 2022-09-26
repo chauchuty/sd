@@ -28,16 +28,14 @@ class SocketServer extends GeneralPreferences{
     onConnection(){
         this.server.on('connection', (socket) => {
             this.logger('Cliente Conectado!')
-
             this.onMessage(socket)
             this.onClose(socket)
+            this.onTimeout(socket)
         })
     }
 
-    
-
     onMessage(socket: net.Socket){
-        socket.on('data', (data) => {
+        socket.on('data', (data: Buffer) => {
             this.logger(`Dados recebidos: ${data.toString()}`)
             try {
                 this.logger('Tratando dados recebidos...')
@@ -51,13 +49,18 @@ class SocketServer extends GeneralPreferences{
             } catch (error) {
                 this.logger('Erro ao processar a mensagem recebida!')
             }
-            
         })
     }
 
     onClose(socket: net.Socket){
         socket.on('close', () => {
             this.logger('Cliente desconectado!')
+        })
+    }
+
+    onTimeout(socket: net.Socket){
+        socket.on('timeout', () => {
+            this.logger('Cliente desconectado por timeout!')
         })
     }
 }
