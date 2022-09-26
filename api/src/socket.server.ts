@@ -6,16 +6,18 @@ import ProtocolRequest from './model/protocol.request'
 import ProtocolResponse from './model/protocol.response'
 
 
-class SocketServer extends GeneralPreferences{
-    private server = net.createServer()
+class SocketServer extends GeneralPreferences {
+    private server = net.createServer({
+        allowHalfOpen: true
+    })
     private handleMessage = new HandleMessage()
-    
-    constructor(){
+
+    constructor() {
         super()
         this.handleMessage = new HandleMessage()
     }
 
-    start(){
+    start() {
         this.logger('Iniciando Socket Server...')
 
         this.server.listen(env.api.port, () => {
@@ -23,18 +25,20 @@ class SocketServer extends GeneralPreferences{
             this.onConnection()
         })
     }
-    
-    onConnection(){
+
+    onConnection() {
         this.server.on('connection', (socket) => {
             this.logger('Cliente Conectado!')
-            this.onMessage(socket)
-            this.onError(socket)
-            this.onClose(socket)
-            this.onTimeout(socket)
+            socket.on('ready', () => {
+                this.onMessage(socket)
+                this.onError(socket)
+                this.onClose(socket)
+                this.onTimeout(socket)
+            })
         })
     }
 
-    onMessage(socket: net.Socket){
+    onMessage(socket: net.Socket) {
         socket.on('data', (data: Buffer) => {
             this.logger(`Dados recebidos: ${data.toString()}`)
             try {
@@ -52,19 +56,19 @@ class SocketServer extends GeneralPreferences{
         })
     }
 
-    onError(socket: net.Socket){
+    onError(socket: net.Socket) {
         socket.on('error', (error) => {
             this.logger(`Erro: ${error}`)
         })
     }
 
-    onClose(socket: net.Socket){
+    onClose(socket: net.Socket) {
         socket.on('close', () => {
             this.logger('Cliente desconectado!')
         })
     }
 
-    onTimeout(socket: net.Socket){
+    onTimeout(socket: net.Socket) {
         socket.on('timeout', () => {
             this.logger('Cliente desconectado por timeout!')
         })
