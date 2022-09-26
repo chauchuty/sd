@@ -12,7 +12,7 @@ class ProtocolRequest {
     }
 
     toJson(){
-        return JSON.stringify(this)
+        return JSON.stringify(this)+"\n"
     }
 
 }
