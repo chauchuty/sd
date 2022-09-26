@@ -1,16 +1,16 @@
 class ProtocolResponse {
     private status: number
-    private message: string
-    private response: any
+    private mensagem: string
+    private dados: any
 
-    constructor(status: number, message: string, response: any){
+    constructor(status: number, mensagem: string, dados: any){
         this.status = status
-        this.message = message
-        this.response = response
+        this.mensagem = mensagem
+        this.dados = dados
     }
 
     fromJson(json: any){
-        return new ProtocolResponse(json['status'], json['message'], json['response'])
+        return new ProtocolResponse(json['status'], json['mensagem'], json['dados'])
     }
 
     toJson(){
@@ -20,3 +20,4 @@ class ProtocolResponse {
 }
 
 export default ProtocolResponse
+
