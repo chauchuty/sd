@@ -2,9 +2,6 @@ import net from 'net'
 import env from './config/environments'
 import GeneralPreferences from './general.preferences'
 import HandleMessage from './handle.message'
-import ProtocolRequest from './model/protocol.request'
-import ProtocolResponse from './model/protocol.response'
-
 
 class SocketServer extends GeneralPreferences {
     private server = net.createServer({
