@@ -29,6 +29,7 @@ class SocketServer extends GeneralPreferences{
         this.server.on('connection', (socket) => {
             this.logger('Cliente Conectado!')
             this.onMessage(socket)
+            this.onError(socket)
             this.onClose(socket)
             this.onTimeout(socket)
         })
@@ -49,6 +50,12 @@ class SocketServer extends GeneralPreferences{
             } catch (error) {
                 this.logger('Erro ao processar a mensagem recebida!')
             }
+        })
+    }
+
+    onError(socket: net.Socket){
+        socket.on('error', (error) => {
+            this.logger(`Erro: ${error}`)
         })
     }
 
