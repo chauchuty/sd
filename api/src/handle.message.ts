@@ -53,12 +53,12 @@ class HandleMessage extends GeneralPreferences {
 
     if (!usuario) {
       this.logger(`Usuário não encontrado!`);
-      return new ProtocolResponse(400, "Usuário não encontrado!", {});
+      return new ProtocolResponse(404, "Usuário não encontrado!", {});
     }
 
     if (usuario.status !== 0) {
       this.logger(`Usuário já conectado!`);
-      return new ProtocolResponse(400, "Usuário já conectado!", {
+      return new ProtocolResponse(403, "Usuário já conectado!", {
         nome: usuario.nome,
         status: usuario.status,
       });
@@ -100,7 +100,7 @@ class HandleMessage extends GeneralPreferences {
 
     if (usuario) {
       this.logger(`Usuário já cadastrado! ${usuario.ra}`);
-      return new ProtocolResponse(400, "Usuário já cadastrado!", {ra: usuario.ra});
+      return new ProtocolResponse(403, "Usuário já cadastrado!", {ra: usuario.ra});
     }
 
     usuario = await prisma.usuario.create({
@@ -149,7 +149,7 @@ class HandleMessage extends GeneralPreferences {
       return new ProtocolResponse(200, "Usuário desconectado com sucesso!", {});
     } else {
       this.logger(`Usuário já desconectado!`);
-      return new ProtocolResponse(400, "Usuário já está desconectado!", {});
+      return new ProtocolResponse(202, "Usuário já está desconectado!", {});
     }
   }
 }
