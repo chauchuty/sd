@@ -32,7 +32,7 @@ class HandleMessage extends GeneralPreferences {
       } catch (error) {
         this.logger("Protocolo Inválido!");
         reject(
-          new ProtocolResponse(500, "Protolo Inválido", {
+          new ProtocolResponse(400, "Protolo Inválido", {
             error: error,
           }).toJson()
         );
@@ -53,12 +53,12 @@ class HandleMessage extends GeneralPreferences {
 
     if (!usuario) {
       this.logger(`Usuário não encontrado!`);
-      return new ProtocolResponse(401, "Usuário não encontrado!", {});
+      return new ProtocolResponse(400, "Usuário não encontrado!", {});
     }
 
     if (usuario.status !== 0) {
       this.logger(`Usuário já conectado!`);
-      return new ProtocolResponse(401, "Usuário já conectado!", {
+      return new ProtocolResponse(400, "Usuário já conectado!", {
         nome: usuario.nome,
         status: usuario.status,
       });
@@ -81,7 +81,7 @@ class HandleMessage extends GeneralPreferences {
           usuario
         );
       } else {
-        return new ProtocolResponse(500, "Internal Server Error", {
+        return new ProtocolResponse(500, "Não foi possível logar o usuário", {
           usuario,
         });
       }
@@ -100,7 +100,7 @@ class HandleMessage extends GeneralPreferences {
 
     if (usuario) {
       this.logger(`Usuário já cadastrado! ${usuario.ra}`);
-      return new ProtocolResponse(401, "Usuário já cadastrado!", {ra: usuario.ra});
+      return new ProtocolResponse(400, "Usuário já cadastrado!", {ra: usuario.ra});
     }
 
     usuario = await prisma.usuario.create({
@@ -133,7 +133,7 @@ class HandleMessage extends GeneralPreferences {
 
     if (!usuario) {
       this.logger(`Usuário não encontrado!`);
-      return new ProtocolResponse(401, "Usuário não encontrado!", {});
+      return new ProtocolResponse(400, "Usuário não encontrado!", {});
     }
 
     if (usuario.status !== 0) {
@@ -149,7 +149,7 @@ class HandleMessage extends GeneralPreferences {
       return new ProtocolResponse(200, "Usuário desconectado com sucesso!", {});
     } else {
       this.logger(`Usuário já desconectado!`);
-      return new ProtocolResponse(401, "Usuário já está desconectado!", {});
+      return new ProtocolResponse(400, "Usuário já está desconectado!", {});
     }
   }
 }
