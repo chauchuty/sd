@@ -4,9 +4,15 @@ import GeneralPreferences from './general.preferences'
 import HandleMessage from './handle.message'
 
 class SocketServer extends GeneralPreferences {
-    private server = net.createServer({
-        allowHalfOpen: true
+    private server = net.createServer(socket => {
+        this.logger(`Conectado: ${socket.remoteAddress}:${socket.remotePort}`)
+        socket.write('Conectado com sucesso!\n')
+        this.onMessage(socket)
+        this.onError(socket)
+        this.onClose(socket)
+        this.onTimeout(socket)
     })
+
     private handleMessage = new HandleMessage()
 
     constructor() {
@@ -16,23 +22,7 @@ class SocketServer extends GeneralPreferences {
 
     start() {
         this.logger('Iniciando Socket Server...')
-
-        this.server.listen(env.api.port, () => {
-            this.logger(`Socket Server iniciado com sucesso: s://${env.api.host}:${env.api.port}`)
-            this.onConnection()
-        })
-    }
-
-    onConnection() {
-        this.server.on('connection', (socket) => {
-            this.logger('Cliente Conectado!')
-            socket.on('ready', () => {
-                this.onMessage(socket)
-                this.onError(socket)
-                this.onClose(socket)
-                this.onTimeout(socket)
-            })
-        })
+        this.server.listen(env.api.port, env.api.host)
     }
 
     onMessage(socket: net.Socket) {
@@ -42,11 +32,14 @@ class SocketServer extends GeneralPreferences {
                 this.logger('Tratando dados recebidos...')
                 this.handleMessage.handleProtocolRequest(data)
                     .then((response) => {
+                        this.logger(`[Response] ${response}`)
                         socket.write(response)
                     })
                     .catch((error) => {
-                        socket.write(error);
+                        this.logger(`[Error] - ${error}`)
+                        socket.write(error)
                     })
+                    .finally
             } catch (error) {
                 this.logger('Erro ao processar a mensagem recebida!')
             }
@@ -55,7 +48,7 @@ class SocketServer extends GeneralPreferences {
 
     onError(socket: net.Socket) {
         socket.on('error', (error) => {
-            this.logger(`Erro: ${error}`)
+            this.logger(`[ERROR]: ${error}`)
         })
     }
 

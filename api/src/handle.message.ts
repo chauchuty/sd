@@ -30,9 +30,9 @@ class HandleMessage extends GeneralPreferences {
         }
         resolve(this.response.toJson());
       } catch (error) {
-        this.logger("Internal Server Error");
+        this.logger("Protocolo Inválido!");
         reject(
-          new ProtocolResponse(500, "Internal Server Error", {
+          new ProtocolResponse(500, "Protolo Inválido", {
             error: error,
           }).toJson()
         );
