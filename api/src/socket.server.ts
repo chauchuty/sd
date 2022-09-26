@@ -20,7 +20,6 @@ class SocketServer extends GeneralPreferences{
 
         this.server.listen(env.api.port, () => {
             this.logger(`Socket Server iniciado com sucesso: s://${env.api.host}:${env.api.port}`)
-
             this.onConnection()
         })
     }

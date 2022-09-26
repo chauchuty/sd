@@ -8,6 +8,7 @@ class HandleMessage extends GeneralPreferences {
   private request!: ProtocolRequest;
 
   handleProtocolRequest(data: Buffer) {
+    this.logger(`[handleProtocolRequest] - ${data.toString()}`);
     return new Promise<string>(async (resolve, reject) => {
       try {
         this.request = JSON.parse(data.toString()) as ProtocolRequest;
