@@ -17,18 +17,24 @@ class WebSocketServer extends GeneralPreferences {
         this.server = new Server({ port: env.api.server.websocket.port }, () => {
             this.logger(`Servidor iniciado em ${env.api.server.websocket.host}:${env.api.server.websocket.port}`)
 
-            this.client = new SocketClient()
-            this.client.start()
-
-            if (this.server && this.client) {
-                this.onConnection()
+            if (this.server) {
+                this.startClient()
+                if (this.client) {
+                    this.onConnection()
+                }
             }
         })
+    }
+
+    private startClient() {
+        this.client = new SocketClient()
+        this.client.start()
     }
 
     private onConnection() {
         this.server.on('connection', (socket) => {
             this.logger('Cliente conectado')
+            this.emit(socket, 'Conectado ao servidor')
 
             // WebSocket
             this.onMessage(socket)
@@ -56,9 +62,9 @@ class WebSocketServer extends GeneralPreferences {
         })
     }
 
-    private emit(socket: WebSocket, message: Buffer) {
+    private emit(socket: WebSocket, message: string) {
         this.logger(`Mensagem enviada: ${message}`)
-        socket.send(message.toString())
+        socket.send(message)
     }
 }
 

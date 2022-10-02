@@ -8,17 +8,36 @@ const environments_1 = __importDefault(require("./config/environments"));
 const general_preferences_1 = __importDefault(require("./general.preferences"));
 class SocketClient extends general_preferences_1.default {
     constructor() {
-        super();
+        super('SocketClient');
         this.client = new net_1.default.Socket();
     }
     start() {
-        this.logger('Inicializando SocketClient');
+        this.logger('Inicializando...');
         this.client.connect(environments_1.default.api.client.socket.port, environments_1.default.api.client.socket.host, () => {
-            this.logger('Conectado ao servidor');
+            this.logger(`Conectado ao servidor ${environments_1.default.api.client.socket.host}:${environments_1.default.api.client.socket.port}`);
+            if (this.client) {
+                this.onMessage();
+                this.onClose();
+            }
         });
     }
-    emit(message) {
-        this.client.write(message);
+    onMessage() {
+        this.client.on('data', (data) => {
+            this.logger(`Mensagem recebida: ${data}`);
+            if (this.socket) {
+                this.socket.send(data.toString());
+            }
+        });
+    }
+    onClose() {
+        this.client.on('close', () => {
+            this.logger('Conexão encerrada');
+        });
+    }
+    emit(message, socket) {
+        this.logger(`Mensagem enviada: ${message}`);
+        this.socket = socket; // Save socket
+        this.client.write(message.toString());
     }
 }
 exports.default = SocketClient;

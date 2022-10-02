@@ -3,19 +3,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const websocket_client_1 = __importDefault(require("./websocket.client"));
+const websocket_server_1 = __importDefault(require("./websocket.server"));
 const general_preferences_1 = __importDefault(require("./general.preferences"));
 class Proxy extends general_preferences_1.default {
-    // private socketClient: SocketClient
     constructor() {
-        super();
-        this.webSocketServer = new websocket_client_1.default();
-        // this.socketClient = new SocketClient()
+        super('Proxy');
+        this.webSocketServer = new websocket_server_1.default();
     }
     start() {
-        this.logger('Proxy Inicializado');
+        this.logger('Inicializado');
         this.webSocketServer.start();
-        // this.socketClient.start()
     }
 }
 // Application
