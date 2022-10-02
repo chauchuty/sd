@@ -1,6 +1,6 @@
 import env from '../config/environments';
 
-class SocketClient {
+class WebSocketClient {
     public socket: WebSocket
 
     constructor() {
@@ -17,4 +17,4 @@ class SocketClient {
     }
 }
 
-export default SocketClient
+export default WebSocketClient

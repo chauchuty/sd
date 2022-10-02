@@ -1,3 +1,5 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const environments = {
     development: {
         api: {
@@ -9,14 +11,12 @@ const environments = {
             },
             client: {
                 socket: {
-                    host: '51.81.87.67',
+                    host: 'localhost',
                     port: 8082
                 },
             }
-            
         }
     },
-
     production: {
         api: {
             websocketserver: {
@@ -29,6 +29,5 @@ const environments = {
             },
         }
     }
-}
-
-export default environments.development // Development or Production
+};
+exports.default = environments.development; // Development or Production

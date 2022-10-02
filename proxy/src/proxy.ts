@@ -1,21 +1,17 @@
-import WebSocketServer from "./websocket.client"
-import SocketClient from "./socket.client"
+import WebSocketServer from "./websocket.server"
 import GeneralPreferences from "./general.preferences"
 
 class Proxy extends GeneralPreferences {
     private webSocketServer!: WebSocketServer
-    private socketClient: SocketClient
 
     constructor(){
-        super()
+        super('Proxy')
         this.webSocketServer = new WebSocketServer()
-        this.socketClient = new SocketClient()
     }
 
     start(){
-        this.logger('Proxy Inicializado')
-        // this.webSocketServer.start()
-        this.socketClient.start()
+        this.logger('Inicializado')
+        this.webSocketServer.start()
     }
 }
 

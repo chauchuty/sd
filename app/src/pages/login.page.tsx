@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
-import SocketClient from "../service/socket.client";
+import WebSocketClient from "../service/websocket.client";
 
 type Form = {
     ra: string
@@ -9,12 +9,12 @@ type Form = {
 }
 
 function LoginPage() {
-    const [socket, setSocket] = useState<SocketClient>();
+    const [socket, setSocket] = useState<WebSocketClient>();
     
     const { register, handleSubmit, watch, formState: { errors } } = useForm<Form>();
 
     useEffect(() => {
-        setSocket(new SocketClient());
+        setSocket(new WebSocketClient());
         
     }, [])
 
