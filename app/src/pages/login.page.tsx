@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import ProtocolRequest from "../model/protocol.request";
+import ProtocolResponse from "../model/protocol.response";
 import WebSocketClient from "../service/websocket.client";
 
 type Form = {
@@ -9,17 +11,40 @@ type Form = {
 }
 
 function LoginPage() {
-    const [socket, setSocket] = useState<WebSocketClient>();
-    
+    const navigate = useNavigate();
+    const [socket, setSocket] = useState<WebSocketClient>(new WebSocketClient());
+
     const { register, handleSubmit, watch, formState: { errors } } = useForm<Form>();
 
     useEffect(() => {
-        setSocket(new WebSocketClient());
-        
+        socket.onConnection(() => {
+            console.log("Conectado!");
+        })
+
+        socket.onMessage((data) => {
+            let response = ProtocolResponse.fromJson(data);
+            console.log(response)
+            switch (response.status) {
+                case 200:
+                    console.log("Login efetuado com sucesso!");
+                    navigate("/home");
+                    break;
+                case 401:
+                    alert("Usuário ou senha inválidos!");
+                    break;
+                case 403:
+                    alert("Usuário já encontra-se conectado!");
+                    navigate("/home");
+                    break;
+                default:
+                    alert("Erro desconhecido!");
+            }
+        })
     }, [])
 
     const onSubmit: SubmitHandler<Form> = (data) => {
-        socket?.emit(JSON.stringify(data))
+        let request = new ProtocolRequest('login', data);
+        socket?.emit(request.toJson());
     };
 
 
