@@ -15,13 +15,13 @@ class HandleMessage extends GeneralPreferences {
 
         switch (this.request.operacao) {
           case "login":
-            this.response = await this.handleLogin(this.request.params);
+            this.response = await this.handleLogin(this.request.parametros);
             break;
           case "cadastrar":
-            this.response = await this.handleRegister(this.request.params)
+            this.response = await this.handleRegister(this.request.parametros)
             break;
           case "logout":
-            this.response = await this.handleLogout(this.request.params);
+            this.response = await this.handleLogout(this.request.parametros);
             break;
           default:
             this.logger("Operação invalida!");
@@ -40,9 +40,78 @@ class HandleMessage extends GeneralPreferences {
     });
   }
 
-  async handleLogin(params: any): Promise<any> {
-    this.logger(`[handleLogin] - ${JSON.stringify(params)}`);
-    const { ra, senha } = params;
+  async handleLogin(parametros: any): Promise<any> {
+    this.logger(`[handleLogin] - ${JSON.stringify(parametros)}`);
+    const { ra, senha } = parametros;
+
+    let usuario = await prisma.usuario.findFirst({
+      where: {
+        ra: ra,
+        senha: senha,
+      },
+    });
+
+    if (!usuario) {
+      this.logger(`Usuário não encontrado / Usuário ou senha inválido!`);
+      return new ProtocolResponse(404, "Usuário não encontrado / Usuário ou senha inválido!", {});
+    }
+
+    if (usuario.status !== 0) {
+      this.logger(`Usuário já encontra-se conectado!`);
+      return new ProtocolResponse(403, "Usuário já encontra-se conectado!", {});
+    }
+
+    if (usuario) {
+      usuario = await prisma.usuario.update({
+        where: {
+          id: usuario.id,
+        },
+        data: {
+          status: 1,
+        },
+      });
+
+      if (usuario.status === 1) {
+        return new ProtocolResponse(200, "Usuário logado com sucesso!", {});
+      } else {
+        return new ProtocolResponse(500, "Erro interno do servidor", {});
+      }
+    }
+  }
+
+  async handleRegister(parametros: any) {
+    this.logger(`[handleRegister] - ${JSON.stringify(parametros)}`);
+    const { ra } = parametros;
+
+    let usuario = await prisma.usuario.findFirst({
+      where: {
+        ra: ra,
+      },
+    });
+
+    if (usuario) {
+      this.logger(`Usuário já encontra-se cadastrado! ${usuario.ra}`);
+      return new ProtocolResponse(202, "Usuário já encontra-se cadastrado!", {});
+    }
+
+    usuario = await prisma.usuario.create({
+      data: parametros,
+    });
+
+    this.logger(`[DB] - ${usuario}`);
+
+    if (usuario) {
+      this.logger(`Usuário cadastrado com sucesso!`);
+      return new ProtocolResponse(201, "Usuário cadastrado com sucesso!", {});
+    } else {
+      this.logger(`Erro interno do servidor`);
+      return new ProtocolResponse(500, "Erro interno do servidor", {});
+    }
+  }
+
+  async handleLogout(parametros: any) {
+    this.logger(`[handleLogout] - ${JSON.stringify(parametros)}`);
+    const { ra, senha } = parametros;
 
     let usuario = await prisma.usuario.findFirst({
       where: {
@@ -57,87 +126,7 @@ class HandleMessage extends GeneralPreferences {
     }
 
     if (usuario.status !== 0) {
-      this.logger(`Usuário já conectado!`);
-      return new ProtocolResponse(403, "Usuário já conectado!", {
-        nome: usuario.nome,
-        status: usuario.status,
-      });
-    }
-
-    if (usuario) {
-      usuario = await prisma.usuario.update({
-        where: {
-          id: usuario.id,
-        },
-        data: {
-          status: 1,
-        },
-      });
-
-      if (usuario.status === 1) {
-        return new ProtocolResponse(
-          200,
-          "Usuário logado com sucesso!",
-          usuario
-        );
-      } else {
-        return new ProtocolResponse(500, "Não foi possível logar o usuário", {
-          usuario,
-        });
-      }
-    }
-  }
-
-  async handleRegister(params: any) {
-    this.logger(`[handleRegister] - ${JSON.stringify(params)}`);
-    const { ra } = params;
-
-    let usuario = await prisma.usuario.findFirst({
-      where: {
-        ra: ra,
-      },
-    });
-
-    if (usuario) {
-      this.logger(`Usuário já cadastrado! ${usuario.ra}`);
-      return new ProtocolResponse(403, "Usuário já cadastrado!", {ra: usuario.ra});
-    }
-
-    usuario = await prisma.usuario.create({
-      data: params,
-    });
-
-    this.logger(`[DB] - ${usuario}`);
-
-    if (usuario) {
-      this.logger(`Usuário cadastrado com sucesso!`);
-      return new ProtocolResponse(200, "Usuário cadastrado com sucesso!", {
-        usuario,
-      });
-    } else {
-      this.logger(`Não foi possível cadastrar usuário!`);
-      return new ProtocolResponse(500, "Internal Server Error!", {});
-    }
-  }
-
-  async handleLogout(params: any) {
-    this.logger(`[handleLogout] - ${JSON.stringify(params)}`);
-    const { ra, senha } = params;
-
-    let usuario = await prisma.usuario.findFirst({
-      where: {
-        ra: ra,
-        senha: senha,
-      },
-    });
-
-    if (!usuario) {
-      this.logger(`Usuário não encontrado!`);
-      return new ProtocolResponse(400, "Usuário não encontrado!", {});
-    }
-
-    if (usuario.status !== 0) {
-      this.logger(`Usuário desconectado!`);
+      this.logger(`Usuário desconectado com sucesso!`);
       usuario = await prisma.usuario.update({
         where: {
           id: usuario.id,
@@ -146,10 +135,10 @@ class HandleMessage extends GeneralPreferences {
           status: 0,
         },
       });
-      return new ProtocolResponse(200, "Usuário desconectado com sucesso!", {});
+      return new ProtocolResponse(600, "Usuário desconectado com sucesso!", {});
     } else {
-      this.logger(`Usuário já desconectado!`);
-      return new ProtocolResponse(202, "Usuário já está desconectado!", {});
+      this.logger(`Usuário já  encontra-se desconectado!`);
+      return new ProtocolResponse(202, "Usuário já  encontra-se desconectado!", {});
     }
   }
 }

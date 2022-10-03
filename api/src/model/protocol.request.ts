@@ -1,14 +1,14 @@
 class ProtocolRequest {
     public operacao: string
-    public params: any
+    public parametros: any
 
-    constructor(operation: string, params: any){
-        this.operacao = operation
-        this.params = params
+    constructor(operacao: string, parametros: any){
+        this.operacao = operacao
+        this.parametros = parametros
     }
 
     fromJson(json: any){
-        return new ProtocolRequest(json['operacao'], json['params'])
+        return new ProtocolRequest(json['operacao'], json['parametros'])
     }
 
     toJson(){
