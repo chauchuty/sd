@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import ProtocolRequest from "../model/protocol.request";
+import ProtocolResponse from "../model/protocol.response";
+import WebSocketClient from "../service/websocket.client";
 
 type Categoria = {
 	id: number;
@@ -11,36 +14,57 @@ type Form = {
 	nome: string;
 	ra: string;
 	senha: string;
-	categoria: Categoria;
+	categoria_id: number;
 	descricao: string;
 };
 
 function RegisterPage() {
+	const [socket, setSocket] = useState<WebSocketClient>(new WebSocketClient());
+	const navigate = useNavigate();
 	const [categorias, setCategorias] = useState<Categoria[]>([]);
-	const {
-		register,
-		handleSubmit,
-		watch,
-		formState: { errors },
-	} = useForm<Form>();
+	const { register, handleSubmit, watch, formState: { errors } } = useForm<Form>();
 
 	const onSubmit: SubmitHandler<Form> = (data) => {
-		console.log(data); // Implementar Login
+		let request = new ProtocolRequest('cadastrar', data);
+		socket.emit(request.toJson())
 	};
 
 	useEffect(() => {
-		// Implementar requisição para buscar categorias
+		socket.onConnection(() => {
+			console.log("Conectado!");
+		});
+
+		socket.onMessage((data) => {
+			let response = ProtocolResponse.fromJson(data);
+			console.log(response)
+			switch (response.status) {
+				case 200:
+					alert("Usuário efetuado com sucesso!");
+					navigate("/home");
+					break;
+				case 202:
+					alert("Usuário já encontra-se cadastrado!");
+					navigate("/register");
+					break;
+				case 403:
+					alert("Usuário já encontra-se conectado!");
+					navigate("/home");
+					break;
+				case 404:
+					alert("Usuário ou senha inválidos!");
+					navigate("/login");
+					break;
+				default:
+					alert("Erro desconhecido!");
+			}
+		});
 		setCategorias([
 			{ id: 1, nome: "Eletromecânico" },
 			{ id: 2, nome: "Desenvolvedor" },
 			{ id: 3, nome: "Professor" },
 		]);
-	}, []);
 
-	// useEffect(() => {
-	//     console.log(watch("ra"));
-	//     console.log(watch("senha"));
-	// }, [watch("ra"), watch("senha")]);
+	}, []);
 
 	return (
 		<div className="container">
@@ -106,7 +130,7 @@ function RegisterPage() {
 												<select
 													defaultValue={-1}
 													className="form-control form-select"
-													{...register("categoria", { required: true })}
+													{...register("categoria_id", { required: true, valueAsNumber: true })}
 												>
 													<option value={-1} disabled>
 														Selecione uma categoria
@@ -117,7 +141,7 @@ function RegisterPage() {
 														</option>
 													))}
 												</select>
-												{errors.categoria && (
+												{errors.categoria_id && (
 													<span className="form-text text-danger">
 														Categoria é obrigatório
 													</span>
@@ -155,8 +179,8 @@ function RegisterPage() {
 										</form>
 										<hr />
 										<div className="text-center">
-											<Link to="/register" className="small">
-												Criar uma conta
+											<Link to="/login" className="small">
+												Já possui um acesso?
 											</Link>
 										</div>
 									</div>

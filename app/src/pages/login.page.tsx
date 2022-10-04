@@ -26,15 +26,20 @@ function LoginPage() {
             console.log(response)
             switch (response.status) {
                 case 200:
-                    console.log("Login efetuado com sucesso!");
+                    alert("Usuário efetuado com sucesso!");
                     navigate("/home");
                     break;
                 case 401:
                     alert("Usuário ou senha inválidos!");
+                    navigate("/login");
                     break;
                 case 403:
                     alert("Usuário já encontra-se conectado!");
                     navigate("/home");
+                    break;
+                case 404:
+                    alert("Usuário ou senha inválidos!");
+                    navigate("/login");
                     break;
                 default:
                     alert("Erro desconhecido!");

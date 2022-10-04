@@ -7,7 +7,7 @@ class ProtocolRequest {
         this.parametros = parametros
     }
 
-    fromJson(json: any){
+    static fromJson(json: any){
         return new ProtocolRequest(json['operacao'], json['parametros'])
     }
 

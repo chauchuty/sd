@@ -32,25 +32,24 @@ class WebSocketServer extends GeneralPreferences {
     }
 
     private onConnection() {
-        this.server.on('connection', (socket) => {
-            this.logger('Cliente conectado')
-            this.emit(socket, 'Conectado ao servidor')
-
-            // WebSocket
+        this.server.on('connection', (socket, request) => {
+            this.logger(`Conexão estabelecida: ${request.socket.remoteAddress}:${request.socket.remotePort}`)
+            
             this.onMessage(socket)
-            this.onError()
-            this.onClose()
+            this.onClose(socket)
+            this.onError(socket)
+        })
+        
+    }
+
+    private onClose(socket: WebSocket) {
+        socket.on('close', () => {
+            this.logger(`Conexão encerrada`)
         })
     }
 
-    private onClose() {
-        this.server.on('close', () => {
-            this.logger('Cliente desconectado')
-        })
-    }
-
-    private onError() {
-        this.server.on('error', (error) => {
+    private onError(socket: WebSocket) {
+        socket.on('error', (error) => {
             this.logger(`Erro: ${error}`)
         })
     }
