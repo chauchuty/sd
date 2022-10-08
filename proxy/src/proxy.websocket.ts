@@ -37,7 +37,7 @@ class ProxyWebSocket extends GeneralPreferences {
                 })
 
                 // // Calls SocketClient
-                this.socketClient.connect(8082, 'localhost', () => {
+                this.socketClient.connect(env.api.client.socket.port, env.api.client.socket.host, () => {
                     this.logger('SocketClient Conectado!')
 
                     this.socketClient.on('data', (data) => {

@@ -25,7 +25,7 @@ const environments = {
             },
             socketclient: {
                 host: '51.81.87.67',
-                port: 8082
+                port: 8089
             },
         }
     }
