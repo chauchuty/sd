@@ -5,27 +5,42 @@ import GeneralPreferences from './general.preferences'
 
 class ProxyWebSocket extends GeneralPreferences {
     private wsServer!: WebSocketServer
-    private socketClient!: net.Socket 
+    private socketClient!: net.Socket
 
-    constructor(){
+    constructor() {
         super('ProxyWebSocket')
     }
 
-    start(){
+    start() {
         this.logger('Iniciado!')
 
         this.socketClient = new net.Socket()
 
         this.wsServer = new WebSocketServer({ port: env.api.server.websocket.port }, () => {
             this.logger(`Servidor WebSocket iniciado em: ws://${env.api.server.websocket.host}:${env.api.server.websocket.port}`)
+            this.socketClient.connect(env.api.client.socket.port, env.api.client.socket.host, () => {
+                this.logger('SocketClient Conectado!')
+            })
 
             this.wsServer.on('connection', (socket) => {
                 this.logger('WSClient Conectado!')
 
+                // Calls SocketClient
+
+                this.socketClient.on('data', (data) => {
+                    this.logger(`[SocketCliente] Mensagem recebida: ${data}`)
+                    socket.send(data.toString())
+                })
+
+                this.socketClient.on('close', () => {
+                    this.logger('SocketClient Desconectado!')
+                })
+
+
                 // Calls WebSocket
                 socket.on('message', (message) => {
                     this.logger(`[WebSocketServer] Mensagem recebida: ${message}`)
-                    
+
                     if (this.socketClient) {
                         this.socketClient.write(message.toString())
                     }
@@ -36,19 +51,7 @@ class ProxyWebSocket extends GeneralPreferences {
                     this.socketClient.destroy()
                 })
 
-                // // Calls SocketClient
-                this.socketClient.connect(env.api.client.socket.port, env.api.client.socket.host, () => {
-                    this.logger('SocketClient Conectado!')
 
-                    this.socketClient.on('data', (data) => {
-                        this.logger(`[SocketCliente] Mensagem recebida: ${data}`)
-                        socket.send(data.toString())
-                    })
-
-                    this.socketClient.on('close', () => {
-                        this.logger('SocketClient Desconectado!')
-                    })
-                })   
             })
         })
     }

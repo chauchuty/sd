@@ -22,6 +22,10 @@ class WebSocketClient {
     emit(message: string) {
         this.socket.send(message)
     }
+
+    close() {
+        this.socket.close()
+    }
 }
 
 export default WebSocketClient
