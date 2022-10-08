@@ -1,3 +1,4 @@
+
 import GeneralPreferences from "./general.preferences";
 import ProtocolRequest from "./model/protocol.request";
 import ProtocolResponse from "./model/protocol.response";
@@ -40,9 +41,14 @@ class HandleMessage extends GeneralPreferences {
     });
   }
 
-  async handleLogin(parametros: any): Promise<any> {
-    this.logger(`[handleLogin] - ${JSON.stringify(parametros)}`);
-    const { ra, senha } = parametros;
+  async handleLogin(params: any): Promise<any> {
+    this.logger(`[handleLogin] - ${JSON.stringify(params)}`);
+    const { ra, senha } = params;   
+    
+    if(ra.length < 7 || ra.length > 7)
+      return new ProtocolResponse(403, "RA precisa ter tamanho 7!", {}); 
+    if(!senha.length)
+      return new ProtocolResponse(403, "Senha não pode ser vazia!", {}); 
 
     let usuario = await prisma.usuario.findFirst({
       where: {
