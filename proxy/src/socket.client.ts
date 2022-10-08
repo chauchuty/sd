@@ -5,7 +5,7 @@ import { WebSocket } from 'ws'
 
 class SocketClient extends GeneralPreferences {
     private socketClient!: net.Socket
-    private socketTmp!: WebSocket
+    // private socketTmp!: WebSocket
 
     constructor(){
         super('SocketClient')
@@ -33,17 +33,19 @@ class SocketClient extends GeneralPreferences {
     }
 
     emit(socket: WebSocket, message: string){
-        this.socketTmp = socket // Socket Temp
+        // this.socketTmp = socket // Socket Temp
         this.socketClient.write(message)
+    }
+
+    socketEmit(socket: WebSocket, message: string){
+        socket.send(message)
     }
 
     disconnect(){
         this.socketClient.destroy()
     }
 
-    socketTempEmit(message: string){
-        this.socketTmp.send(message)
-    }
+    
 }
 
 export default SocketClient

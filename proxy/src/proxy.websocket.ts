@@ -1,10 +1,12 @@
 import GeneralPreferences from './general.preferences'
 import WebSocketServer from './web.socker.server'
 import SocketClient from './socket.client'
+import { WebSocket } from 'ws'
 
 class ProxyWebSocket extends GeneralPreferences {
     private webSocketServer!: WebSocketServer
     private socketClient!: SocketClient
+    private sockets: WebSocket[] = [] // FIFO
 
     constructor() {
         super('ProxyWebSocket')
@@ -19,7 +21,8 @@ class ProxyWebSocket extends GeneralPreferences {
 
             this.socketClient.onData((data) => {
                 this.logger('SocketClient: ' + data.toString())
-                this.socketClient.socketTempEmit(data.toString())
+                this.sockets[0].send(data.toString())
+                this.sockets.shift()
             })
 
             this.socketClient.onClose(() => {
@@ -37,6 +40,7 @@ class ProxyWebSocket extends GeneralPreferences {
 
             this.webSocketServer.onMessage(socket, message => {
                 this.logger(`Mensagem Recebida: ${message}`)
+                this.sockets.push(socket)
                 this.socketClient.emit(socket, message.toString())
             })
 
