@@ -17,9 +17,8 @@ class SocketServer extends GeneralPreferences {
         this.logger('Iniciando Socket Server...')
         this.server = net.createServer(socket => {
             this.logger(`Conectado: ${socket.remoteAddress}:${socket.remotePort}`)
-            // socket.write(`Conectado: ${socket.remoteAddress}:${socket.remotePort}`)
             this.onMessage(socket)
-            // this.onError(socket)
+            this.onError(socket)
             this.onClose(socket)
         })
         this.server.listen(env.api.port, env.api.host)
