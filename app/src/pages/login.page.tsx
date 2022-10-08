@@ -17,41 +17,17 @@ function LoginPage() {
     const { register, handleSubmit, watch, formState: { errors } } = useForm<Form>();
 
     useEffect(() => {
-
         socket.current = new WebSocketClient();
-
         socket.current.onConnection(() => {
-            console.log("WebSocket conectado com sucesso!");
+            console.log("Conectado com sucesso!");
 
-            socket.current?.onMessage((data) => {
-                let response = ProtocolResponse.fromJson(data);
+            socket.current?.onMessage((response: ProtocolResponse) => {
                 console.log(response)
-            });
+            });	
 
-            // socket.current.onMessage((data) => {
-            //     let response = ProtocolResponse.fromJson(data);
-            //     console.log(response)
-            // switch (response.status) {
-            //     case 200:
-            //         alert("Usuário efetuado com sucesso!");
-            //         navigate("/home");
-            //         break;
-            //     case 401:
-            //         alert("Usuário ou senha inválidos!");
-            //         navigate("/login");
-            //         break;
-            //     case 403:
-            //         alert("Usuário já encontra-se conectado!");
-            //         navigate("/home");
-            //         break;
-            //     case 404:
-            //         alert("Usuário ou senha inválidos!");
-            //         navigate("/login");
-            //         break;
-            //     default:
-            //         alert("Erro desconhecido!");
-            // }
-            // })
+            socket.current?.onError((error) => {
+                console.error(error);
+            });
         })
 
     }, [])

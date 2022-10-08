@@ -6,7 +6,7 @@ class GeneralPreferences {
     }
 
     protected logger(message: string){
-        console.log(`[${new Date().toLocaleTimeString()}] [${this.entity}]- ${message}`)
+        console.log(`[${new Date().toLocaleTimeString()}] [${this.entity}] - ${message}`)
     }
 }
 

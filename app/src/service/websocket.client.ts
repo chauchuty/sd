@@ -1,4 +1,5 @@
 import env from '../config/environments';
+import ProtocolResponse from '../model/protocol.response';
 
 class WebSocketClient {
     public socket: WebSocket
@@ -6,6 +7,7 @@ class WebSocketClient {
     constructor() {
         this.socket = new WebSocket(`ws://${env.development.api.proxy.host}:${env.development.api.proxy.port}`)
     }
+    
 
     onConnection(callback: () => void) {
         this.socket.onopen = () => {
@@ -13,9 +15,21 @@ class WebSocketClient {
         }
     }
 
-    onMessage(callback: (message: Buffer) => void) {
+    onMessage(callback: (message: ProtocolResponse) => void) {
         this.socket.onmessage = (message) => {
-            callback(message.data)
+            callback(ProtocolResponse.fromJson(message.data))
+        }
+    }
+
+    onError(callback: (error: Event) => void) {
+        this.socket.onerror = (error) => {
+            callback(error)
+        }
+    }
+
+    onClose(callback: () => void) {
+        this.socket.onclose = () => {
+            callback()
         }
     }
 
@@ -23,7 +37,7 @@ class WebSocketClient {
         this.socket.send(message)
     }
 
-    close() {
+    disconnect() {
         this.socket.close()
     }
 }

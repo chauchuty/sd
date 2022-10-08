@@ -1,57 +1,53 @@
-import { WebSocketServer } from 'ws'
-import net from 'net'
-import env from './config/environments'
 import GeneralPreferences from './general.preferences'
+import WebSocketServer from './web.socker.server'
+import SocketClient from './socket.client'
 
 class ProxyWebSocket extends GeneralPreferences {
-    private wsServer!: WebSocketServer
-    private socketClient!: net.Socket
+    private webSocketServer!: WebSocketServer
+    private socketClient!: SocketClient
 
     constructor() {
         super('ProxyWebSocket')
+
+        this.webSocketServer = new WebSocketServer()
+        this.socketClient = new SocketClient()
     }
 
     start() {
-        this.logger('Iniciado!')
+        // SocketClient
+        this.socketClient.connect(() => {
 
-        this.socketClient = new net.Socket()
-
-        this.wsServer = new WebSocketServer({ port: env.api.server.websocket.port }, () => {
-            this.logger(`Servidor WebSocket iniciado em: ws://${env.api.server.websocket.host}:${env.api.server.websocket.port}`)
-            this.socketClient.connect(env.api.client.socket.port, env.api.client.socket.host, () => {
-                this.logger('SocketClient Conectado!')
+            this.socketClient.onData((data) => {
+                this.logger('SocketClient: ' + data.toString())
+                this.socketClient.socketTmp.send(data.toString())
             })
 
-            this.wsServer.on('connection', (socket) => {
-                this.logger('WSClient Conectado!')
+            this.socketClient.onClose(() => {
+                this.logger('SocketClient Desconectado!')
+            })
 
-                // Calls SocketClient
+            this.socketClient.onError((error) => {
+                this.logger('SocketClient Erro: ' + error.message)
+            })
+        })
 
-                this.socketClient.on('data', (data) => {
-                    this.logger(`[SocketCliente] Mensagem recebida: ${data}`)
-                    socket.send(data.toString())
-                })
+        // WebSocketServer
+        this.webSocketServer.onConnection(socket => {
+            this.logger('Conexão WebSocket Estabelecida')
 
-                this.socketClient.on('close', () => {
-                    this.logger('SocketClient Desconectado!')
-                })
+            this.webSocketServer.onMessage(socket, message => {
+                this.logger(`Mensagem Recebida: ${message}`)
+                this.socketClient.emit(socket, message.toString())
+            })
 
+            this.webSocketServer.onClose(socket, () => {
+                this.logger('Conexão WebSocket Encerrada')
+                console.log(this.webSocketServer.getCountListeners())
+            })
 
-                // Calls WebSocket
-                socket.on('message', (message) => {
-                    this.logger(`[WebSocketServer] Mensagem recebida: ${message}`)
-
-                    if (this.socketClient) {
-                        this.socketClient.write(message.toString())
-                    }
-                })
-
-                socket.on('close', () => {
-                    this.logger('WSClient Desconectado!')
-                    this.socketClient.destroy()
-                })
-
-
+            this.webSocketServer.onError(socket, error => {
+                this.logger(`Erro: ${error.message}`)
+                socket.close()
             })
         })
     }
