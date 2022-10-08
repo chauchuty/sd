@@ -4,14 +4,7 @@ import GeneralPreferences from './general.preferences'
 import HandleMessage from './handle.message'
 
 class SocketServer extends GeneralPreferences {
-    private server = net.createServer(socket => {
-        this.logger(`Conectado: ${socket.remoteAddress}:${socket.remotePort}`)
-        socket.write('Conectado com sucesso!\n')
-        this.onMessage(socket)
-        this.onError(socket)
-        this.onClose(socket)
-        this.onTimeout(socket)
-    })
+    private server!: net.Server
 
     private handleMessage = new HandleMessage()
 
@@ -22,10 +15,20 @@ class SocketServer extends GeneralPreferences {
 
     start() {
         this.logger('Iniciando Socket Server...')
+        this.server = net.createServer(socket => {
+            this.logger(`Conectado: ${socket.remoteAddress}:${socket.remotePort}`)
+            // socket.write(`Conectado: ${socket.remoteAddress}:${socket.remotePort}`)
+            this.onMessage(socket)
+            // this.onError(socket)
+            this.onClose(socket)
+        })
         this.server.listen(env.api.port, env.api.host)
     }
 
     onMessage(socket: net.Socket) {
+        socket.on('data', data => {
+            this.logger(`Mensagem recebida: ${data.toString()}`)
+        })
         socket.on('data', (data: Buffer) => {
             this.logger(`Dados recebidos: ${data.toString()}`)
             try {
@@ -55,12 +58,7 @@ class SocketServer extends GeneralPreferences {
     onClose(socket: net.Socket) {
         socket.on('close', () => {
             this.logger('Cliente desconectado!')
-        })
-    }
-
-    onTimeout(socket: net.Socket) {
-        socket.on('timeout', () => {
-            this.logger('Cliente desconectado por timeout!')
+            socket.destroy()
         })
     }
 }

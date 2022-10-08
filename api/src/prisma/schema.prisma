@@ -14,14 +14,14 @@ model categoria {
 }
 
 model usuario {
-  id              Int       @id @default(autoincrement())
-  nome            String    @db.VarChar(255)
-  ra              String    @db.VarChar(32)
-  senha           String    @db.VarChar(32)
-  fk_categoria_id Int
-  descricao       String    @db.Text
-  status          Int?      @default(0)
-  categoria       categoria @relation(fields: [fk_categoria_id], references: [id], onUpdate: Restrict, map: "usuario_ibfk_1")
+  id           Int       @id @default(autoincrement())
+  nome         String    @db.VarChar(255)
+  ra           String    @db.VarChar(32)
+  senha        String    @db.VarChar(32)
+  categoria_id Int
+  descricao    String    @db.Text
+  status       Int?      @default(0)
+  categoria    categoria @relation(fields: [categoria_id], references: [id], onUpdate: Restrict, map: "usuario_ibfk_1")
 
-  @@index([fk_categoria_id], map: "fk_categoria_id")
+  @@index([categoria_id], map: "categoria_id")
 }

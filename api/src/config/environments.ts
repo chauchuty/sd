@@ -14,4 +14,4 @@ const environments = {
     }
 }
 
-export default environments.production // Development or Production
+export default environments.development // Development or Production
