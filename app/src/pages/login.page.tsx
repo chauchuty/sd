@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import ProtocolRequest from "../model/protocol.request";
@@ -12,44 +12,54 @@ type Form = {
 
 function LoginPage() {
     const navigate = useNavigate();
-    const [socket, setSocket] = useState<WebSocketClient>(new WebSocketClient());
+    const socket = useRef<WebSocketClient>();
 
     const { register, handleSubmit, watch, formState: { errors } } = useForm<Form>();
 
     useEffect(() => {
-        socket.onConnection(() => {
-            console.log("Conectado!");
+
+        socket.current = new WebSocketClient();
+
+        socket.current.onConnection(() => {
+            console.log("WebSocket conectado com sucesso!");
+
+            socket.current?.onMessage((data) => {
+                let response = ProtocolResponse.fromJson(data);
+                console.log(response)
+            });
+
+            // socket.current.onMessage((data) => {
+            //     let response = ProtocolResponse.fromJson(data);
+            //     console.log(response)
+            // switch (response.status) {
+            //     case 200:
+            //         alert("Usuário efetuado com sucesso!");
+            //         navigate("/home");
+            //         break;
+            //     case 401:
+            //         alert("Usuário ou senha inválidos!");
+            //         navigate("/login");
+            //         break;
+            //     case 403:
+            //         alert("Usuário já encontra-se conectado!");
+            //         navigate("/home");
+            //         break;
+            //     case 404:
+            //         alert("Usuário ou senha inválidos!");
+            //         navigate("/login");
+            //         break;
+            //     default:
+            //         alert("Erro desconhecido!");
+            // }
+            // })
         })
 
-        socket.onMessage((data) => {
-            let response = ProtocolResponse.fromJson(data);
-            console.log(response)
-            switch (response.status) {
-                case 200:
-                    alert("Usuário efetuado com sucesso!");
-                    navigate("/home");
-                    break;
-                case 401:
-                    alert("Usuário ou senha inválidos!");
-                    navigate("/login");
-                    break;
-                case 403:
-                    alert("Usuário já encontra-se conectado!");
-                    navigate("/home");
-                    break;
-                case 404:
-                    alert("Usuário ou senha inválidos!");
-                    navigate("/login");
-                    break;
-                default:
-                    alert("Erro desconhecido!");
-            }
-        })
     }, [])
 
     const onSubmit: SubmitHandler<Form> = (data) => {
         let request = new ProtocolRequest('login', data);
-        socket?.emit(request.toJson());
+        console.log(request.toJson())
+        socket.current?.emit(request.toJson());
     };
 
 

@@ -1,5 +1,4 @@
 import env from '../config/environments';
-import ProtocolResponse from '../model/protocol.response';
 
 class WebSocketClient {
     public socket: WebSocket
