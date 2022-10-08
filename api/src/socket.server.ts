@@ -26,9 +26,6 @@ class SocketServer extends GeneralPreferences {
     }
 
     onMessage(socket: net.Socket) {
-        socket.on('data', data => {
-            this.logger(`Mensagem recebida: ${data.toString()}`)
-        })
         socket.on('data', (data: Buffer) => {
             this.logger(`Dados recebidos: ${data.toString()}`)
             try {
@@ -42,7 +39,7 @@ class SocketServer extends GeneralPreferences {
                         this.logger(`[Error] - ${error}`)
                         socket.write(error)
                     })
-                    .finally
+
             } catch (error) {
                 this.logger('Erro ao processar a mensagem recebida!')
             }
@@ -57,7 +54,7 @@ class SocketServer extends GeneralPreferences {
 
     onClose(socket: net.Socket) {
         socket.on('close', () => {
-            this.logger('Cliente desconectado!')
+            this.logger(`Desconectado: ${socket.remoteAddress}:${socket.remotePort}`)
             socket.destroy()
         })
     }
