@@ -4,8 +4,8 @@ import env from './config/environments'
 import { WebSocket } from 'ws'
 
 class SocketClient extends GeneralPreferences {
-    public socketClient!: net.Socket
-    public socketTmp!: WebSocket
+    private socketClient!: net.Socket
+    private socketTmp!: WebSocket
 
     constructor(){
         super('SocketClient')
@@ -33,7 +33,7 @@ class SocketClient extends GeneralPreferences {
     }
 
     emit(socket: WebSocket, message: string){
-        this.socketTmp = socket
+        this.socketTmp = socket // Socket Temp
         this.socketClient.write(message)
     }
 
@@ -41,8 +41,8 @@ class SocketClient extends GeneralPreferences {
         this.socketClient.destroy()
     }
 
-    getcountListeners(){
-        return this.socketClient.listenerCount('data')
+    socketTempEmit(message: string){
+        this.socketTmp.send(message)
     }
 }
 

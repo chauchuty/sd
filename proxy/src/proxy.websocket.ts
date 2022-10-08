@@ -19,7 +19,7 @@ class ProxyWebSocket extends GeneralPreferences {
 
             this.socketClient.onData((data) => {
                 this.logger('SocketClient: ' + data.toString())
-                this.socketClient.socketTmp.send(data.toString())
+                this.socketClient.socketTempEmit(data.toString())
             })
 
             this.socketClient.onClose(() => {
@@ -42,7 +42,6 @@ class ProxyWebSocket extends GeneralPreferences {
 
             this.webSocketServer.onClose(socket, () => {
                 this.logger('Conexão WebSocket Encerrada')
-                console.log(this.webSocketServer.getCountListeners())
             })
 
             this.webSocketServer.onError(socket, error => {
