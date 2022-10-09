@@ -44,11 +44,6 @@ class HandleMessage extends GeneralPreferences {
   async handleLogin(params: any): Promise<any> {
     this.logger(`[handleLogin] - ${JSON.stringify(params)}`);
     const { ra, senha } = params;   
-    
-    if(ra.length < 7 || ra.length > 7)
-      return new ProtocolResponse(403, "RA precisa ter tamanho 7!", {}); 
-    if(!senha.length)
-      return new ProtocolResponse(403, "Senha não pode ser vazia!", {}); 
 
     let usuario = await prisma.usuario.findFirst({
       where: {
@@ -62,11 +57,6 @@ class HandleMessage extends GeneralPreferences {
       return new ProtocolResponse(404, "Usuário não encontrado / Usuário ou senha inválido!", {});
     }
 
-    if (usuario.status !== 0) {
-      this.logger(`Usuário já encontra-se conectado!`);
-      return new ProtocolResponse(403, "Usuário já encontra-se conectado!", {});
-    }
-
     if (usuario) {
       usuario = await prisma.usuario.update({
         where: {
@@ -78,7 +68,7 @@ class HandleMessage extends GeneralPreferences {
       });
 
       if (usuario.status === 1) {
-        return new ProtocolResponse(200, "Usuário logado com sucesso!", {});
+        return new ProtocolResponse(200, "Usuário logado com sucesso!", {...usuario});
       } else {
         return new ProtocolResponse(500, "Erro interno do servidor", {});
       }
