@@ -40,6 +40,10 @@ class WebSocketClient {
     disconnect() {
         this.socket.close()
     }
+
+    isConnected(){
+        return this.socket.readyState === WebSocket.OPEN
+    }
 }
 
 export default WebSocketClient

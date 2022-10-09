@@ -1,9 +1,11 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useContext } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import ProtocolRequest from "../model/protocol.request";
 import ProtocolResponse from "../model/protocol.response";
+import { AppContext } from "../provider/app.provider";
 import WebSocketClient from "../service/websocket.client";
+import Authenticate from './../utils/authenticate'
 
 type Form = {
     ra: string
@@ -12,32 +14,58 @@ type Form = {
 
 function LoginPage() {
     const navigate = useNavigate();
+    const context = useContext(AppContext)
     const socket = useRef<WebSocketClient>();
 
-    const { register, handleSubmit, watch, formState: { errors } } = useForm<Form>();
+    const { register, handleSubmit, watch, formState: { errors }, reset, setValue, getValues} = useForm<Form>();
 
     useEffect(() => {
+        // Default Value Form
+        setValue("ra", "1234567");
+        setValue("senha", "123456");
+        console.log(getValues());
+        
+        // Socket
         socket.current = new WebSocketClient();
         socket.current.onConnection(() => {
             console.log("Conectado com sucesso!");
 
-            socket.current?.onMessage((response: ProtocolResponse) => {
-                console.log(response)
-            });	
+            if (socket.current?.isConnected()) {
+                socket.current.onMessage((response: ProtocolResponse) => {
+                    console.log(response)
+                    switch (response.status) {
+                        case 200:
+                            alert(response.mensagem)
+                            context.access = response.dados; // Define Context!
+                            navigate("/home");
+                            break;
+                        case 404:
+                            alert(response.mensagem)
+                            reset({ ra: "", senha: ""});
+                        case 500:
+                            alert(response.mensagem)
+                            break;
+                        default:
+                            break;
+                    }
+                });
 
-            socket.current?.onError((error) => {
-                console.error(error);
-            });
+                socket.current.onError((error) => {
+                    console.error(error);
+                });
+            }
         })
-
-    }, [])
+        
+        return () => {
+            socket.current?.disconnect();
+        }
+    }, []);
 
     const onSubmit: SubmitHandler<Form> = (data) => {
         let request = new ProtocolRequest('login', data);
-        console.log(request.toJson())
+        console.log(request)
         socket.current?.emit(request.toJson());
     };
-
 
     return (
         <div className="container">

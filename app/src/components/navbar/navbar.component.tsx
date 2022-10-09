@@ -1,11 +1,58 @@
-import * as React from "react";
+import { useEffect, useRef } from "react";
 import { render } from "react-dom";
+import { useNavigate } from "react-router-dom";
+import ProtocolRequest from "../../model/protocol.request";
+import ProtocolResponse from "../../model/protocol.response";
+import Usuario from "../../model/usuario.model";
+import WebSocketClient from "../../service/websocket.client";
 
-function NavBarComponent(props: any) {
-	const [userName, setUserName] = React.useState("Test User");
+type NavBarProps = {
+	access?: Usuario
+}
+
+function NavBarComponent(props: NavBarProps) {
+	const navigate = useNavigate();
+	const socket = useRef<WebSocketClient>();
+
+	useEffect(() => {
+		// Socket
+		socket.current = new WebSocketClient();
+		socket.current.onConnection(() => {
+			console.log("Conectado com sucesso!");
+
+			if (socket.current?.isConnected()) {
+				socket.current.onMessage((response: ProtocolResponse) => {
+					console.log(response)
+					switch (response.status) {
+						case 600:
+							alert(response.mensagem)
+							navigate("/login");
+							break
+						case 202:
+							alert(response.mensagem)
+							navigate("/login");
+							break
+						default:
+							alert('Erro desconhecido!')
+							break;
+					}
+				});
+
+				socket.current.onError((error) => {
+					console.error(error);
+				});
+			}
+		})
+
+		return () => {
+			socket.current?.disconnect();
+		}
+		
+	}, [])
 
 	const handleLogout = () => {
-		console.log("clicked");
+		let request = new ProtocolRequest('logout', {});
+		socket.current?.emit(request.toJson());
 	};
 
 	return (
@@ -22,7 +69,9 @@ function NavBarComponent(props: any) {
 						aria-expanded="false"
 					>
 						<span className="mr-2 d-none d-lg-inline text-gray-600 small">
-							{userName}
+							{
+								props.access?.nome ? props.access.nome : "<Vazio>"
+							}
 						</span>
 						<img
 							className="img-profile rounded-circle"

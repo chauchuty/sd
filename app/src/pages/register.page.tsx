@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import ProtocolRequest from "../model/protocol.request";
@@ -19,45 +19,46 @@ type Form = {
 };
 
 function RegisterPage() {
-	const [socket, setSocket] = useState<WebSocketClient>(new WebSocketClient());
+	const socket = useRef<WebSocketClient>();
 	const navigate = useNavigate();
 	const [categorias, setCategorias] = useState<Categoria[]>([]);
 	const { register, handleSubmit, watch, formState: { errors } } = useForm<Form>();
 
 	const onSubmit: SubmitHandler<Form> = (data) => {
 		let request = new ProtocolRequest('cadastrar', data);
-		socket.emit(request.toJson())
+		socket.current?.emit(request.toJson());
 	};
 
 	useEffect(() => {
-		socket.onConnection(() => {
-			console.log("Conectado!");
-		});
+		// Socket
+        socket.current = new WebSocketClient();
+        socket.current.onConnection(() => {
+            console.log("Conectado com sucesso!");
 
-		socket.onMessage((data) => {
-			let response = ProtocolResponse.fromJson(data);
-			console.log(response)
-			switch (response.status) {
-				case 200:
-					alert("Usuário efetuado com sucesso!");
-					navigate("/home");
-					break;
-				case 202:
-					alert("Usuário já encontra-se cadastrado!");
-					navigate("/register");
-					break;
-				case 403:
-					alert("Usuário já encontra-se conectado!");
-					navigate("/home");
-					break;
-				case 404:
-					alert("Usuário ou senha inválidos!");
-					navigate("/login");
-					break;
-				default:
-					alert("Erro desconhecido!");
-			}
-		});
+            if (socket.current?.isConnected()) {
+                socket.current.onMessage((response: ProtocolResponse) => {
+                    console.log(response)
+                    switch (response.status) {
+						case 201:
+							alert(response.mensagem)
+							navigate("/login");
+                        default:
+                            break;
+                    }
+                });
+
+                socket.current.onError((error) => {
+                    console.error(error);
+                });
+            }
+        })
+        
+        return () => {
+            socket.current?.disconnect();
+        }
+	}, [])
+
+	useEffect(() => {
 		setCategorias([
 			{ id: 1, nome: "Eletromecânico" },
 			{ id: 2, nome: "Desenvolvedor" },

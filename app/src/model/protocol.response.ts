@@ -17,7 +17,6 @@ class ProtocolResponse {
     toJson(){
         return JSON.stringify(this)
     }
-
 }
 
 export default ProtocolResponse
