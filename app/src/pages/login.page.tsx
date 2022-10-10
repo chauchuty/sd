@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef, useContext } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
+import ButtonComponent from "../components/shared/button.component";
 import ProtocolRequest from "../model/protocol.request";
 import ProtocolResponse from "../model/protocol.response";
 import { AppContext } from "../provider/app.provider";
@@ -16,15 +17,16 @@ function LoginPage() {
     const navigate = useNavigate();
     const context = useContext(AppContext)
     const socket = useRef<WebSocketClient>();
+    const [isLoading, setIsLoading] = useState(false);
 
-    const { register, handleSubmit, watch, formState: { errors }, reset, setValue, getValues} = useForm<Form>();
+    const { register, handleSubmit, watch, formState: { errors }, reset, setValue, getValues } = useForm<Form>();
 
     useEffect(() => {
         // Default Value Form
-        setValue("ra", "1234567");
+        setValue("ra", "2098270");
         setValue("senha", "123456");
         console.log(getValues());
-        
+
         // Socket
         socket.current = new WebSocketClient();
         socket.current.onConnection(() => {
@@ -41,7 +43,7 @@ function LoginPage() {
                             break;
                         case 404:
                             alert(response.mensagem)
-                            reset({ ra: "", senha: ""});
+                            reset({ ra: "", senha: "" });
                         case 500:
                             alert(response.mensagem)
                             break;
@@ -55,7 +57,7 @@ function LoginPage() {
                 });
             }
         })
-        
+
         return () => {
             socket.current?.disconnect();
         }
@@ -64,6 +66,7 @@ function LoginPage() {
     const onSubmit: SubmitHandler<Form> = (data) => {
         let request = new ProtocolRequest('login', data);
         console.log(request)
+        setIsLoading(true)
         socket.current?.emit(request.toJson());
     };
 
@@ -97,7 +100,7 @@ function LoginPage() {
                                                 }
                                             </div>
 
-                                            <button type="submit" className="btn btn-block btn-dark">Acessar</button>
+                                            <ButtonComponent label="Acessar" isLoading={isLoading} />
                                         </form>
                                         <hr />
                                         <div className="text-center">

@@ -60,9 +60,14 @@ function RegisterPage() {
 
 	useEffect(() => {
 		setCategorias([
-			{ id: 1, nome: "Eletromecânico" },
-			{ id: 2, nome: "Desenvolvedor" },
-			{ id: 3, nome: "Professor" },
+			{ id: 0, nome: "Programador" },
+			{ id: 1, nome: "Eletricista" },
+			{ id: 2, nome: "Mecânico" },
+			{ id: 3, nome: "Cientista" },
+			{ id: 4, nome: "Professor" },
+			{ id: 5, nome: "Analista" },
+			{ id: 6, nome: "Gamer" },
+			{ id: 7, nome: "Streamer" }
 		]);
 
 	}, []);
@@ -175,7 +180,7 @@ function RegisterPage() {
 											</div>
 
 											<button type="submit" className="btn btn-block btn-dark">
-												Acessar
+												Cadastrar
 											</button>
 										</form>
 										<hr />
