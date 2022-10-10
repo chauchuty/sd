@@ -32,8 +32,7 @@ class SocketClient extends GeneralPreferences {
         this.socketClient.on('close', callback)
     }
 
-    emit(socket: WebSocket, message: string){
-        // this.socketTmp = socket // Socket Temp
+    emit(message: string){
         this.socketClient.write(message)
     }
 

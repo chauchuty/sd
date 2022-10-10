@@ -5,47 +5,31 @@ import { WebSocket } from 'ws'
 
 class ProxyWebSocket extends GeneralPreferences {
     private webSocketServer!: WebSocketServer
-    private socketClient!: SocketClient
-    private sockets: WebSocket[] = [] // FIFO
+    private mapper = new Map<WebSocket, SocketClient>()
 
     constructor() {
         super('ProxyWebSocket')
-
         this.webSocketServer = new WebSocketServer()
-        this.socketClient = new SocketClient()
     }
 
     start() {
-        // SocketClient
-        this.socketClient.connect(() => {
-
-            this.socketClient.onData((data) => {
-                this.logger('SocketClient: ' + data.toString())
-                this.sockets[0].send(data.toString())
-                this.sockets.shift()
-            })
-
-            this.socketClient.onClose(() => {
-                this.logger('SocketClient Desconectado!')
-            })
-
-            this.socketClient.onError((error) => {
-                this.logger('SocketClient Erro: ' + error.message)
-            })
-        })
-
         // WebSocketServer
         this.webSocketServer.onConnection(socket => {
             this.logger('Conexão WebSocket Estabelecida')
 
+            this.subscribe(socket)
+
             this.webSocketServer.onMessage(socket, message => {
                 this.logger(`Mensagem Recebida: ${message}`)
-                this.sockets.push(socket)
-                this.socketClient.emit(socket, message.toString())
+                const socketClient = this.mapper.get(socket)
+                if (socketClient) {
+                    socketClient.emit(message.toString())
+                }
             })
 
             this.webSocketServer.onClose(socket, () => {
                 this.logger('Conexão WebSocket Encerrada')
+                this.unsubscribe(socket)
             })
 
             this.webSocketServer.onError(socket, error => {
@@ -53,6 +37,33 @@ class ProxyWebSocket extends GeneralPreferences {
                 socket.close()
             })
         })
+    }
+
+    private subscribe(socket: WebSocket) {
+        const socketClient = new SocketClient()
+        socketClient.connect(() => {
+            socketClient.onData(data => {
+                this.logger('SocketClient: ' + data.toString())
+                socket.send(data.toString())
+            })
+
+            socketClient.onClose(() => {
+                this.logger('SocketClient Desconectado!')
+            })
+
+            socketClient.onError(error => {
+                this.logger('SocketClient Erro: ' + error.message)
+            })
+        })
+        this.mapper.set(socket, socketClient)
+    }
+
+    private unsubscribe(socket: WebSocket) {
+        const socketClient = this.mapper.get(socket)
+        if (socketClient) {
+            socketClient.disconnect()
+            this.mapper.delete(socket)
+        }
     }
 }
 
