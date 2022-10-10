@@ -18,7 +18,7 @@ class ProxyWebSocket extends GeneralPreferences {
             this.logger('Conexão WebSocket Estabelecida')
 
             this.subscribe(socket)
-
+            
             this.webSocketServer.onMessage(socket, message => {
                 this.logger(`Mensagem Recebida: ${message}`)
                 const socketClient = this.mapper.get(socket)
@@ -42,6 +42,9 @@ class ProxyWebSocket extends GeneralPreferences {
     private subscribe(socket: WebSocket) {
         const socketClient = new SocketClient()
         socketClient.connect(() => {
+            this.logger('Conexão Socket Estabelecida')
+            this.logger('Quantidade Conexões: ' + this.mapper.size.toString())
+            
             socketClient.onData(data => {
                 this.logger('SocketClient: ' + data.toString())
                 socket.send(data.toString())
@@ -49,6 +52,7 @@ class ProxyWebSocket extends GeneralPreferences {
 
             socketClient.onClose(() => {
                 this.logger('SocketClient Desconectado!')
+                this.logger('Quantidade Conexões: ' + this.mapper.size.toString())
             })
 
             socketClient.onError(error => {
