@@ -1,4 +1,4 @@
-import Usuario from "./usuario.model";
+import Usuario from "./acesso.model";
 
 class Chat {
     usuarios: Usuario[]

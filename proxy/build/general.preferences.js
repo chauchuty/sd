@@ -5,7 +5,7 @@ class GeneralPreferences {
         this.entity = entity;
     }
     logger(message) {
-        console.log(`[${new Date().toLocaleTimeString()}] [${this.entity}]- ${message}`);
+        console.log(`[${new Date().toLocaleTimeString()}] [${this.entity}] - ${message}`);
     }
 }
 exports.default = GeneralPreferences;

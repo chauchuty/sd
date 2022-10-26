@@ -1,8 +1,8 @@
 import { createContext } from "react"
-import Usuario from './../model/usuario.model'
+import Acesso from '../model/acesso.model'
 
 type AppContextType = {
-    access?: Usuario
+    access?: Acesso
 }
 
 export const AppContext = createContext<AppContextType>({} as AppContextType)

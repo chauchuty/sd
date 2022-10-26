@@ -19,16 +19,21 @@ const environments = {
 
     production: {
         api: {
-            websocketserver: {
-                host: '51.81.87.67',
-                port: 8081
+            server: {
+                websocket: {
+                    host: 'localhost',
+                    port: 8081
+                },
             },
-            socketclient: {
-                host: '51.81.87.67',
-                port: 8089
-            },
+            client: {
+                socket: {
+                    host: '51.81.87.67',
+                    port: 8099
+                },
+            }
+            
         }
     }
 }
 
-export default environments.development // Development or Production
+export default environments.production // Development or Production

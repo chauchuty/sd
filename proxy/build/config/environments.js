@@ -25,9 +25,9 @@ const environments = {
             },
             socketclient: {
                 host: '51.81.87.67',
-                port: 8082
+                port: 8089
             },
         }
     }
 };
-exports.default = environments.development; // Development or Production
+exports.default = environments.production; // Development or Production

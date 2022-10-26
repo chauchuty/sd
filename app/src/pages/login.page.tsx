@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import ButtonComponent from "../components/shared/button.component";
 import ProtocolRequest from "../model/protocol.request";
 import ProtocolResponse from "../model/protocol.response";
+import Acesso from "../model/acesso.model";
 import { AppContext } from "../provider/app.provider";
 import WebSocketClient from "../service/websocket.client";
 import Authenticate from './../utils/authenticate'
@@ -23,8 +24,8 @@ function LoginPage() {
 
     useEffect(() => {
         // Default Value Form
-        setValue("ra", "2098270");
-        setValue("senha", "123456");
+        setValue("ra", "1202020");
+        setValue("senha", "123");
         console.log(getValues());
 
         // Socket
@@ -38,7 +39,6 @@ function LoginPage() {
                     switch (response.status) {
                         case 200:
                             alert(response.mensagem)
-                            context.access = response.dados; // Define Context!
                             navigate("/home");
                             break;
                         case 404:
@@ -63,9 +63,10 @@ function LoginPage() {
         }
     }, []);
 
+  
     const onSubmit: SubmitHandler<Form> = (data) => {
         let request = new ProtocolRequest('login', data);
-        console.log(request)
+        context.access = new Acesso(data.ra, data.senha);
         setIsLoading(true)
         socket.current?.emit(request.toJson());
     };

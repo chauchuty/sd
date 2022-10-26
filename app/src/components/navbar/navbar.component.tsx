@@ -1,10 +1,11 @@
-import { useEffect, useRef } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { render } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import ProtocolRequest from "../../model/protocol.request";
 import ProtocolResponse from "../../model/protocol.response";
-import Usuario from "../../model/usuario.model";
+import Usuario from "../../model/acesso.model";
 import WebSocketClient from "../../service/websocket.client";
+import { AppContext } from "../../provider/app.provider";
 
 type NavBarProps = {
 	access?: Usuario
@@ -12,6 +13,7 @@ type NavBarProps = {
 
 function NavBarComponent(props: NavBarProps) {
 	const navigate = useNavigate();
+	const context = useContext(AppContext)
 	const socket = useRef<WebSocketClient>();
 
 	useEffect(() => {
@@ -51,7 +53,8 @@ function NavBarComponent(props: NavBarProps) {
 	}, [])
 
 	const handleLogout = () => {
-		let request = new ProtocolRequest('logout', {});
+		console.log(props.access)
+		let request = new ProtocolRequest('logout', {ra: context.access?.ra, senha: context.access?.senha})
 		socket.current?.emit(request.toJson());
 	};
 
@@ -70,7 +73,7 @@ function NavBarComponent(props: NavBarProps) {
 					>
 						<span className="mr-2 d-none d-lg-inline text-gray-600 small">
 							{
-								props.access?.nome ? props.access.nome : "<Vazio>"
+								props.access?.ra ? props.access.ra : "<Vazio>"
 							}
 						</span>
 						<img
