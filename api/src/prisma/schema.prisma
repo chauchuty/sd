@@ -21,7 +21,7 @@ model usuario {
   categoria_id Int
   descricao    String    @db.Text
   status       Int?      @default(0)
-  categoria    categoria @relation(fields: [categoria_id], references: [id], onUpdate: Restrict, map: "usuario_ibfk_1")
+  categoria    categoria @relation(fields: [categoria_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "usuario_ibfk_1")
 
   @@index([categoria_id], map: "categoria_id")
 }

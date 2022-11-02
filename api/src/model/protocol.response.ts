@@ -17,6 +17,10 @@ class ProtocolResponse {
         return JSON.stringify(this)+"\n"
     }
 
+    getStatus(){
+        return this.status
+    }
+
 }
 
 export default ProtocolResponse

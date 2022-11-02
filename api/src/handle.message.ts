@@ -21,6 +21,9 @@ class HandleMessage extends GeneralPreferences {
           case "cadastrar":
             this.response = await this.handleRegister(this.request.parametros)
             break;
+          case "obter_usuarios":
+            this.response = await this.handleUsers(this.request.parametros)
+            break
           case "logout":
             this.response = await this.handleLogout(this.request.parametros);
             break;
@@ -98,7 +101,7 @@ class HandleMessage extends GeneralPreferences {
 
     if (usuario) {
       this.logger(`Usuário cadastrado com sucesso!`);
-      return new ProtocolResponse(201, "Usuário cadastrado com sucesso!", {});
+      return new ProtocolResponse(201, "Usuário cadastrado com sucesso!", {...usuario});
     } else {
       this.logger(`Erro interno do servidor`);
       return new ProtocolResponse(500, "Erro interno do servidor", {});
@@ -135,6 +138,15 @@ class HandleMessage extends GeneralPreferences {
     } else {
       this.logger(`Usuário já  encontra-se desconectado!`);
       return new ProtocolResponse(202, "Usuário já  encontra-se desconectado!", {});
+    }
+  }
+
+  async handleUsers(parametros: any) {
+    try {
+      let users = await prisma.usuario.findMany();
+      return new ProtocolResponse(203, "Usuários encontrados com sucesso!", { usuarios: users });
+    } catch (error) {
+      return new ProtocolResponse(500, "Erro interno do servidor", {});
     }
   }
 }
