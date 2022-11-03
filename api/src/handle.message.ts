@@ -1,14 +1,24 @@
-
+import net from 'net'
 import GeneralPreferences from "./general.preferences";
 import ProtocolRequest from "./model/protocol.request";
 import ProtocolResponse from "./model/protocol.response";
+import Observer from './observer';
 import prisma from "./prisma/connection";
 
 class HandleMessage extends GeneralPreferences {
   private response!: ProtocolResponse;
   private request!: ProtocolRequest;
+  private observers: Observer[] = [];
 
-  handleProtocolRequest(data: Buffer) {
+  constructor(){
+    super();
+
+    // Observers
+    this.observers.push(new Observer("obterUsuarios")); // [0] Observer Usuários
+    console.log(this.observers);
+  }
+
+  handleProtocolRequest(socket: net.Socket, data: Buffer) {
     this.logger(`[handleProtocolRequest] - ${data.toString()}`);
     return new Promise<string>(async (resolve, reject) => {
       try {
@@ -17,14 +27,17 @@ class HandleMessage extends GeneralPreferences {
         switch (this.request.operacao) {
           case "login":
             this.response = await this.handleLogin(this.request.parametros);
+            this.observers[0].notify(socket, this.response.toJson());
             break;
           case "cadastrar":
             this.response = await this.handleRegister(this.request.parametros)
             break;
           case "obter_usuarios":
+            this.observers[0].subscribe(socket);
             this.response = await this.handleUsers(this.request.parametros)
             break
           case "logout":
+            this.observers[0].unsubscribe(socket);
             this.response = await this.handleLogout(this.request.parametros);
             break;
           default:

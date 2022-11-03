@@ -5,8 +5,7 @@ import HandleMessage from './handle.message'
 
 class SocketServer extends GeneralPreferences {
     private server!: net.Server
-
-    private handleMessage = new HandleMessage()
+    private handleMessage: HandleMessage
 
     constructor() {
         super()
@@ -16,7 +15,7 @@ class SocketServer extends GeneralPreferences {
     start() {
         this.logger('Iniciando Socket Server...')
         this.server = net.createServer(socket => {
-            this.logger(`Conectado: ${socket.remoteAddress}:${socket.remotePort}`)
+            this.onConnection(socket)
             this.onMessage(socket)
             this.onError(socket)
             this.onClose(socket)
@@ -24,12 +23,16 @@ class SocketServer extends GeneralPreferences {
         this.server.listen(env.api.port, env.api.host)
     }
 
+    onConnection(socket: net.Socket) {
+        this.logger(`Conectado: ${socket.remoteAddress}:${socket.remotePort}`)
+    }
+
     onMessage(socket: net.Socket) {
         socket.on('data', (data: Buffer) => {
             this.logger(`Dados recebidos: ${data.toString()}`)
             try {
                 this.logger('Tratando dados recebidos...')
-                this.handleMessage.handleProtocolRequest(data)
+                this.handleMessage.handleProtocolRequest(socket, data)
                     .then((response) => {
                         this.logger(`[Response] ${response}`)
                         socket.write(response)
