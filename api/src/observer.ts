@@ -11,7 +11,6 @@ class Observer extends GeneralPreferences{
     }
 
     subscribe(socket: net.Socket){
-        this.logger('Uma nova inscrição')
         this.sockets.push(socket)
     }
 

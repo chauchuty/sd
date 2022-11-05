@@ -15,7 +15,6 @@ class HandleMessage extends GeneralPreferences {
 
     // Observers
     this.observers.push(new Observer("obterUsuarios")); // [0] Observer Usuários
-    console.log(this.observers);
   }
 
   handleProtocolRequest(socket: net.Socket, data: Buffer) {
@@ -26,19 +25,16 @@ class HandleMessage extends GeneralPreferences {
 
         switch (this.request.operacao) {
           case "login":
-            this.response = await this.handleLogin(this.request.parametros);
-            this.observers[0].notify(socket, this.response.toJson());
+            this.response = await this.handleLogin(socket, this.request.parametros);
             break;
           case "cadastrar":
             this.response = await this.handleRegister(this.request.parametros)
             break;
           case "obter_usuarios":
-            this.observers[0].subscribe(socket);
-            this.response = await this.handleUsers(this.request.parametros)
+            this.response = await this.handleUsers(socket, this.request.parametros)
             break
           case "logout":
-            this.observers[0].unsubscribe(socket);
-            this.response = await this.handleLogout(this.request.parametros);
+            this.response = await this.handleLogout(socket, this.request.parametros);
             break;
           default:
             this.logger("Operação invalida!");
@@ -57,7 +53,7 @@ class HandleMessage extends GeneralPreferences {
     });
   }
 
-  async handleLogin(params: any): Promise<any> {
+  async handleLogin(socket: net.Socket, params: any): Promise<any> {
     this.logger(`[handleLogin] - ${JSON.stringify(params)}`);
     const { ra, senha } = params;   
 
@@ -84,6 +80,7 @@ class HandleMessage extends GeneralPreferences {
       });
 
       if (usuario.status === 1) {
+        this.observers[0].notify(socket, this.response.toJson());
         return new ProtocolResponse(200, "Usuário logado com sucesso!", {...usuario});
       } else {
         return new ProtocolResponse(500, "Erro interno do servidor", {});
@@ -121,7 +118,7 @@ class HandleMessage extends GeneralPreferences {
     }
   }
 
-  async handleLogout(parametros: any) {
+  async handleLogout(socket: net.Socket, parametros: any) {
     this.logger(`[handleLogout] - ${JSON.stringify(parametros)}`);
     const { ra, senha } = parametros;
 
@@ -147,6 +144,7 @@ class HandleMessage extends GeneralPreferences {
           status: 0,
         },
       });
+      this.observers[0].unsubscribe(socket);
       return new ProtocolResponse(600, "Usuário desconectado com sucesso!", {});
     } else {
       this.logger(`Usuário já  encontra-se desconectado!`);
@@ -154,9 +152,10 @@ class HandleMessage extends GeneralPreferences {
     }
   }
 
-  async handleUsers(parametros: any) {
+  async handleUsers(socket: net.Socket, parametros: any) {
     try {
       let users = await prisma.usuario.findMany();
+      this.observers[0].subscribe(socket);
       return new ProtocolResponse(203, "Usuários encontrados com sucesso!", { usuarios: users });
     } catch (error) {
       return new ProtocolResponse(500, "Erro interno do servidor", {});
