@@ -28,7 +28,7 @@ const environments = {
             client: {
                 socket: {
                     host: '51.81.87.67',
-                    port: 8099
+                    port: 8125
                 },
             }
             
