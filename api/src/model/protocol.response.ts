@@ -14,7 +14,7 @@ class ProtocolResponse {
     }
 
     toJson(){
-        return JSON.stringify(this)+"\n"
+        return JSON.stringify(this)
     }
 
     getStatus(){

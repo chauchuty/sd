@@ -10,11 +10,11 @@ class HandleMessage extends GeneralPreferences {
   private request!: ProtocolRequest;
   private observers: Observer[] = [];
 
-  constructor(){
+  constructor() {
     super();
 
     // Observers
-    this.observers.push(new Observer("obterUsuarios")); // [0] Observer Usuários
+    this.observers.push(new Observer("usuarios")); // [0] Observer Usuários
   }
 
   handleProtocolRequest(socket: net.Socket, data: Buffer) {
@@ -30,9 +30,6 @@ class HandleMessage extends GeneralPreferences {
           case "cadastrar":
             this.response = await this.handleRegister(this.request.parametros)
             break;
-          case "obter_usuarios":
-            this.response = await this.handleUsers(socket, this.request.parametros)
-            break
           case "logout":
             this.response = await this.handleLogout(socket, this.request.parametros);
             break;
@@ -43,9 +40,9 @@ class HandleMessage extends GeneralPreferences {
         }
         resolve(this.response.toJson());
       } catch (error) {
-        this.logger("Protocolo Inválido!");
+        this.logger("Erro ao processar mensagem!");
         reject(
-          new ProtocolResponse(400, "Protolo Inválido", {
+          new ProtocolResponse(400, "Erro ao processar mensagem", {
             error: error,
           }).toJson()
         );
@@ -55,7 +52,7 @@ class HandleMessage extends GeneralPreferences {
 
   async handleLogin(socket: net.Socket, params: any): Promise<any> {
     this.logger(`[handleLogin] - ${JSON.stringify(params)}`);
-    const { ra, senha } = params;   
+    const { ra, senha } = params;
 
     let usuario = await prisma.usuario.findFirst({
       where: {
@@ -75,13 +72,16 @@ class HandleMessage extends GeneralPreferences {
           id: usuario.id,
         },
         data: {
-          status: 1,
+          disponivel: 1,
         },
       });
 
-      if (usuario.status === 1) {
-        this.observers[0].notify(socket, this.response.toJson());
-        return new ProtocolResponse(200, "Usuário logado com sucesso!", {...usuario});
+      if (usuario.disponivel === 1) {
+        this.logger(`Usuário conectado com sucesso!`);
+        this.observers[0].subscribe(socket, usuario)
+        this.observers[0].notify()
+        
+        return new ProtocolResponse(200, "Usuário logado com sucesso!", { "usuario": usuario });
       } else {
         return new ProtocolResponse(500, "Erro interno do servidor", {});
       }
@@ -111,7 +111,7 @@ class HandleMessage extends GeneralPreferences {
 
     if (usuario) {
       this.logger(`Usuário cadastrado com sucesso!`);
-      return new ProtocolResponse(201, "Usuário cadastrado com sucesso!", {...usuario});
+      return new ProtocolResponse(201, "Usuário cadastrado com sucesso!", { ...usuario });
     } else {
       this.logger(`Erro interno do servidor`);
       return new ProtocolResponse(500, "Erro interno do servidor", {});
@@ -134,31 +134,22 @@ class HandleMessage extends GeneralPreferences {
       return new ProtocolResponse(404, "Usuário não encontrado!", {});
     }
 
-    if (usuario.status !== 0) {
+    if (usuario.disponivel !== 0) {
       this.logger(`Usuário desconectado com sucesso!`);
+      this.observers[0].unsubscribe(socket, usuario);
+
       usuario = await prisma.usuario.update({
         where: {
           id: usuario.id,
         },
         data: {
-          status: 0,
+          disponivel: 0,
         },
       });
-      this.observers[0].unsubscribe(socket);
       return new ProtocolResponse(600, "Usuário desconectado com sucesso!", {});
     } else {
-      this.logger(`Usuário já  encontra-se desconectado!`);
-      return new ProtocolResponse(202, "Usuário já  encontra-se desconectado!", {});
-    }
-  }
-
-  async handleUsers(socket: net.Socket, parametros: any) {
-    try {
-      let users = await prisma.usuario.findMany();
-      this.observers[0].subscribe(socket);
-      return new ProtocolResponse(203, "Usuários encontrados com sucesso!", { usuarios: users });
-    } catch (error) {
-      return new ProtocolResponse(500, "Erro interno do servidor", {});
+      this.logger(`Usuário já encontra-se desconectado!`);
+      return new ProtocolResponse(403, "Usuário já  encontra-se desconectado!", {});
     }
   }
 }
