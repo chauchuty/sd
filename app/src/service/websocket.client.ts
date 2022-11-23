@@ -8,7 +8,6 @@ class WebSocketClient {
         this.socket = new WebSocket(`ws://${env.development.api.proxy.host}:${env.development.api.proxy.port}`)
     }
     
-
     onConnection(callback: () => void) {
         this.socket.onopen = () => {
             callback()

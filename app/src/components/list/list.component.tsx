@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import Usuario from "../../model/acesso.model";
+import Usuario from "../../model/usuario.model";
 import ListItemComponent from "./list.item.component";
 
 type ListProps = {
