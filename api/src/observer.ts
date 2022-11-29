@@ -23,10 +23,9 @@ class Observer extends GeneralPreferences {
     notify() {
         setTimeout(() => {
             this.sockets.forEach((usuario, socket) => {
-                socket.write(new ProtocolResponse(203, "Lista de Usuários", { usuario: "usuario" }).toJson())
+                socket.write(new ProtocolResponse(203, "Lista de Usuários", { usuarios: [...this.sockets.values()] }).toJson())
             })
         }, 1000)
-       
     }
 }
 

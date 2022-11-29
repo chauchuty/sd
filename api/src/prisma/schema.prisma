@@ -20,7 +20,7 @@ model usuario {
   senha        String    @db.VarChar(32)
   categoria_id Int
   descricao    String    @db.Text
-  disponivel   Int?      @default(0) @db.TinyInt
+  disponivel   Int?      @default(0)
   categoria    categoria @relation(fields: [categoria_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "usuario_ibfk_1")
 
   @@index([categoria_id], map: "categoria_id")
