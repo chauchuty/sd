@@ -137,7 +137,7 @@ class HandleMessage extends GeneralPreferences {
     if (usuario.disponivel !== 0) {
       this.logger(`Usuário desconectado com sucesso!`);
       this.observers[0].unsubscribe(socket, usuario);
-
+      this.observers[0].notify()
       usuario = await prisma.usuario.update({
         where: {
           id: usuario.id,
