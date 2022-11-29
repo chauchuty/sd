@@ -10,11 +10,11 @@ function NavBarComponent() {
 	const context = useContext(AppContext)
 
 	useEffect(() => {
-		
+
 	}, [])
 
 	const handleLogout = () => {
-		let request = new ProtocolRequest('logout', {ra: context.access?.ra, senha: context.access?.senha})
+		let request = new ProtocolRequest('logout', {ra: context.usuario?.ra, senha: context.usuario?.senha})
 		context.socket?.emit(request.toJson());
 	};
 
@@ -33,7 +33,7 @@ function NavBarComponent() {
 					>
 						<span className="mr-2 d-none d-lg-inline text-gray-600 small">
 							{
-								context.access?.ra ? context.access.ra : "<Vazio>"
+								context.usuario?.ra ? context.usuario.ra : "<Vazio>"
 							}
 						</span>
 						<img

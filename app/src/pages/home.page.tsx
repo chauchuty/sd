@@ -13,9 +13,14 @@ function HomePage(props: any) {
 	const navigate = useNavigate()
 
 	useEffect(() => {
+		context.usuarios = []
 		if (!context.socket?.isConnected()) {
 			navigate('/login')
 		}
+
+		window.addEventListener('beforeunload', () => {
+			context.socket?.disconnect()
+		})
 	}, [])
 
 	return (
@@ -34,29 +39,44 @@ function HomePage(props: any) {
 
 							<table className="table">
 								<thead>
-									<tr>
+									<tr className="text-center">
 										<th scope="col">#</th>
 										<th scope="col">Nome</th>
 										<th scope="col">RA</th>
 										<th scope="col">Descrição</th>
 										<th scope="col">Disponivel</th>
-
+										<th scope="col">Chat</th>
 									</tr>
 								</thead>
 								<tbody>
 									{
-										context.usuarios && (
+										context.usuarios && context.usuarios.length > 0 ? (
 											context.usuarios.map((usuario, index) => {
 												return (
-													<tr key={index}>
+													<tr key={index} className="text-center">
 														<th scope="row">{index}</th>
 														<td>{usuario.nome}</td>
 														<td>{usuario.ra}</td>
 														<td>{usuario.descricao}</td>
-														<td>{usuario.disponivel ? 'Sim' : 'Não'}</td>
+														<td>{usuario.disponivel && (
+															<div className="d-grid gap-1">
+																<button className="btn btn-sm btn-dark" type="button">Chat</button>
+															</div>
+														)} 
+														</td>
+														<td>{usuario.disponivel && (
+															<div className="d-grid gap-1">
+																<button className="btn btn-sm btn-success" disabled type="button">Online</button>
+															</div>
+														)} 
+														</td>
 													</tr>
 												)
 											})
+										) : (
+											<tr>
+												<td colSpan={6} className="text-center">Nenhum profissional disponível</td>
+											</tr>
 										)
 
 

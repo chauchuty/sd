@@ -18,6 +18,7 @@ function Operation(props: any) {
           switch (response.status) {
             case 200: // Logado com sucesso
               console.log(response);
+              context.usuario = response.dados.usuario
               navigate("/home");
               break;
             case 201: // Cadastrado com sucesso
@@ -27,9 +28,7 @@ function Operation(props: any) {
               break;
             case 203: // Lista de usuários
               context.usuarios = response.dados.usuarios;
-              console.log(context.usuarios)
-              navigate("/home");
-
+              navigate("/home")
               break;
             case 403:
               navigate("/login");
