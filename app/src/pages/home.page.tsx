@@ -9,10 +9,21 @@ import Operation from "../operations/operation";
 import { AppContext } from "../provider/app.provider";
 
 function HomePage(props: any) {
+	var categorias: any = [
+		{ id: 0, nome: "Programador" },
+		{ id: 1, nome: "Eletricista" },
+		{ id: 2, nome: "Mecânico" },
+		{ id: 3, nome: "Cientista" },
+		{ id: 4, nome: "Professor" },
+		{ id: 5, nome: "Analista" },
+		{ id: 6, nome: "Gamer" },
+		{ id: 7, nome: "Streamer" },
+	]
 	const context = useContext(AppContext)
 	const navigate = useNavigate()
 
 	useEffect(() => {
+		
 		context.usuarios = []
 		if (!context.socket?.isConnected()) {
 			navigate('/login')
@@ -42,7 +53,7 @@ function HomePage(props: any) {
 									<tr className="text-center">
 										<th scope="col">#</th>
 										<th scope="col">Nome</th>
-										<th scope="col">RA</th>
+										<th scope="col">Profissão</th>
 										<th scope="col">Descrição</th>
 										<th scope="col">Disponivel</th>
 										<th scope="col">Chat</th>
@@ -56,7 +67,7 @@ function HomePage(props: any) {
 													<tr key={index} className="text-center">
 														<th scope="row">{index}</th>
 														<td>{usuario.nome}</td>
-														<td>{usuario.ra}</td>
+														<td>{categorias.filter((c: any) => c.id == usuario.categoria_id)[0].nome}</td>
 														<td>{usuario.descricao}</td>
 														<td>{usuario.disponivel && (
 															<div className="d-grid gap-1">

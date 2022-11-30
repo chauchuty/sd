@@ -28,7 +28,7 @@ const environments = {
             client: {
                 socket: {
                     host: '51.81.87.67',
-                    port: 8125
+                    port: 8082
                 },
             }
             
@@ -36,4 +36,4 @@ const environments = {
     }
 }
 
-export default environments.development // Development or Production
+export default environments.production // Development or Production
