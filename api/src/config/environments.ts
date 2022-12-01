@@ -2,14 +2,14 @@ const environments = {
     development: {
         api: {
             host: 'localhost',
-            port: 8082
+            port: 24000
         }
     },
 
     production: {
         api: {
             host: '51.81.87.67',
-            port: 8082
+            port: 24000
         }
     }
 }
