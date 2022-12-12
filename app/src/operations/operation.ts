@@ -17,7 +17,6 @@ function Operation(props: any) {
         context.socket.onMessage((response: ProtocolResponse) => {
           switch (response.status) {
             case 200: // Logado com sucesso
-              console.log(response);
               context.usuario = response.dados.usuario
               navigate("/home");
               break;
@@ -30,6 +29,11 @@ function Operation(props: any) {
               context.usuarios = response.dados.usuarios;
               navigate("/home")
               break;
+            case 207:
+              console.log(response.dados.mensagem)
+              context.chat.push({isMine: false, message: response.dados.mensagem})
+              console.log(context.chat)
+              break
             case 403:
               navigate("/login");
               break;
@@ -44,11 +48,11 @@ function Operation(props: any) {
               break;
           }
 
-          if (response.mensagem && response.status !== 203) {
+          if (response.mensagem && response.status !== 203 && response.status !== 207 && response.status !== 0) {
             alert(response.mensagem);
           }
 
-          if (response.status != 200 && response.status != 203) {
+          if (response.status != 200 && response.status != 203 && response.status !== 207 && response.status !== 0) {
             context.socket.disconnect();
           }
         });

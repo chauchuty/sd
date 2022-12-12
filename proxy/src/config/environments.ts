@@ -3,13 +3,13 @@ const environments = {
         api: {
             server: {
                 websocket: {
-                    host: 'localhost',
-                    port: 8081
+                    host: '10.20.8.112',
+                    port: 22000
                 },
             },
             client: {
                 socket: {
-                    host: 'localhost',
+                    host: '10.20.8.112',
                     port: 8082
                 },
             }
@@ -27,8 +27,8 @@ const environments = {
             },
             client: {
                 socket: {
-                    host: '51.81.87.67',
-                    port: 8082
+                    host: '10.20.8.112',
+                    port: 22000
                 },
             }
             

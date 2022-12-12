@@ -6,6 +6,7 @@ type AppContextType = {
     usuario?: Usuario
     socket: WebSocketClient
     usuarios: Usuario[]
+    chat: any[]
 }
 
 export const AppContext = createContext<AppContextType>({} as AppContextType)

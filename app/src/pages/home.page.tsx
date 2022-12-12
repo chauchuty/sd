@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ChatComponent from "../components/chat/chat.component";
 import ContentComponent from "../components/content/content.component";
 import FooterComponent from "../components/footer/footer.component";
 import NavBarComponent from "../components/navbar/navbar.component";
@@ -9,6 +10,10 @@ import Operation from "../operations/operation";
 import { AppContext } from "../provider/app.provider";
 
 function HomePage(props: any) {
+	const context = useContext(AppContext)
+	const navigate = useNavigate()
+	const [modal, setModal] = useState({ open: false, ra: '' }) 
+	
 	var categorias: any = [
 		{ id: 0, nome: "Programador" },
 		{ id: 1, nome: "Eletricista" },
@@ -19,8 +24,6 @@ function HomePage(props: any) {
 		{ id: 6, nome: "Gamer" },
 		{ id: 7, nome: "Streamer" },
 	]
-	const context = useContext(AppContext)
-	const navigate = useNavigate()
 
 	useEffect(() => {
 		
@@ -34,8 +37,15 @@ function HomePage(props: any) {
 		})
 	}, [])
 
+	const openChat = (ra: string) => {
+		setModal({ open: true, ra: ra })
+	}
+
 	return (
 		<>
+			{
+				modal.open && <ChatComponent ra={modal.ra}  />
+			}
 			<div id="wrapper">
 				<SideBarComponent />
 				<div
@@ -47,7 +57,7 @@ function HomePage(props: any) {
 						<NavBarComponent />
 						<ContentComponent>
 							<h2 className="text-center">Profissionais</h2>
-
+							
 							<table className="table">
 								<thead>
 									<tr className="text-center">
@@ -55,8 +65,8 @@ function HomePage(props: any) {
 										<th scope="col">Nome</th>
 										<th scope="col">Profissão</th>
 										<th scope="col">Descrição</th>
-										<th scope="col">Disponivel</th>
 										<th scope="col">Chat</th>
+										<th scope="col">Disponivel</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -71,7 +81,7 @@ function HomePage(props: any) {
 														<td>{usuario.descricao}</td>
 														<td>{usuario.disponivel && (
 															<div className="d-grid gap-1">
-																<button className="btn btn-sm btn-dark" type="button">Chat</button>
+																<button onClick={() => openChat(usuario.ra)} className="btn btn-sm btn-dark" type="button">Chat</button>
 															</div>
 														)} 
 														</td>
@@ -94,11 +104,13 @@ function HomePage(props: any) {
 									}
 								</tbody>
 							</table>
+							
 						</ContentComponent>
 					</div>
 					<FooterComponent />
 				</div>
 			</div>
+			
 		</>
 	);
 }

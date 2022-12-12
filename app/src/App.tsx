@@ -6,6 +6,7 @@ import { router } from "./routes/router"
 function App() {
   const context = useContext(AppContext)
 
+
   return (
     <AppContext.Provider value={{ ...context }}>
       <RouterProvider router={router}/>

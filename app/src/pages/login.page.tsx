@@ -18,8 +18,8 @@ function LoginPage() {
     const { register, handleSubmit, formState: { errors }, setValue } = useForm<Form>();
 
     useEffect(() => {
-        setValue("ra", "2098270");
-        setValue("senha", "010203");
+        setValue("ra", "2099365");
+        setValue("senha", "123321");
     }, [])
 
     const onSubmit: SubmitHandler<Form> = (data) => {
