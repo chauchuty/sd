@@ -1,3 +1,4 @@
+import { usuario } from '@prisma/client';
 import net from 'net'
 import GeneralPreferences from "./general.preferences";
 import ProtocolRequest from "./model/protocol.request";
@@ -15,6 +16,7 @@ class HandleMessage extends GeneralPreferences {
 
     // Observers
     this.observers.push(new Observer("usuarios")); // [0] Observer Usuários
+    this.observers.push(new Observer("chat")) // [1] Observer Chat
   }
 
   handleProtocolRequest(socket: net.Socket, data: Buffer) {
@@ -22,7 +24,7 @@ class HandleMessage extends GeneralPreferences {
     return new Promise<string>(async (resolve, reject) => {
       try {
         this.request = JSON.parse(data.toString()) as ProtocolRequest;
-
+        console.log(this.request)
         switch (this.request.operacao) {
           case "login":
             this.response = await this.handleLogin(socket, this.request.parametros);
@@ -33,6 +35,9 @@ class HandleMessage extends GeneralPreferences {
           case "logout":
             this.response = await this.handleLogout(socket, this.request.parametros);
             break;
+          case "chat":
+            this.response = await this.handleChat(socket, this.request.parametros);
+            break
           default:
             this.logger("Operação invalida!");
             this.response = new ProtocolResponse(400, "Operação invalida!", {});
@@ -48,6 +53,17 @@ class HandleMessage extends GeneralPreferences {
         );
       }
     });
+  }
+
+  async handleChat(socket: net.Socket, params: any) {
+    const { ra, mensagem } = params
+    this.observers[0].getSockets().forEach((u: usuario, s: net.Socket) => {
+      if (ra == u.ra && u.disponivel == 1) {
+        const response = new ProtocolResponse(207, "Recebendo mensagem de chat!", { mensagem: mensagem });
+        s.write(response.toJson())
+      }
+    })
+    return new ProtocolResponse(0, "", {});
   }
 
   async handleLogin(socket: net.Socket, params: any): Promise<any> {
@@ -80,7 +96,7 @@ class HandleMessage extends GeneralPreferences {
         this.logger(`Usuário conectado com sucesso!`);
         this.observers[0].subscribe(socket, usuario)
         this.observers[0].notify()
-        
+
         return new ProtocolResponse(200, "Usuário logado com sucesso!", { "usuario": usuario });
       } else {
         return new ProtocolResponse(500, "Erro interno do servidor", {});

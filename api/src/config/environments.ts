@@ -2,16 +2,16 @@ const environments = {
     development: {
         api: {
             host: 'localhost',
-            port: 24000
+            port: 8082
         }
     },
 
     production: {
         api: {
-            host: '51.81.87.67',
-            port: 24000
+            host: '10.20.8.91',
+            port: 22000
         }
     }
 }
 
-export default environments.development // Development or Production
+export default environments.production 

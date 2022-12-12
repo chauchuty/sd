@@ -12,6 +12,10 @@ class Observer extends GeneralPreferences {
         this.name = name
     }
 
+    getSockets(){
+        return this.sockets
+    }
+
     subscribe(socket: net.Socket, usuario: usuario) {
         this.sockets.set(socket, usuario)
     }
